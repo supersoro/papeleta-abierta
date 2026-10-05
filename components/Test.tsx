@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { QUESTIONS as Q } from "@/lib/test-2026";
+import { QUESTIONS as Q, statsPosiciones, posicionDe } from "@/lib/posiciones";
 import { affinity, countedAnswers, explainAffinity, stanceOf, withParty, MIN_ANSWERS, type Ans } from "@/lib/afinidad";
 import { useProvincia, useVisibleParties } from "./Provincia";
+import { PosicionVista, fmtValor } from "./PosicionVista";
 import { Dot } from "./Dot";
 
 const OPTS: [number, string][] = [[-2, "Muy en desacuerdo"], [-1, "En desacuerdo"], [0, "Neutral"], [1, "De acuerdo"], [2, "Muy de acuerdo"]];
 const KEY = "papeleta-test-2026";
-const fmt = (v: number | null | undefined) => (v === undefined || v === null ? "—" : v > 0 ? `+${v}` : String(v));
 
 export function Test() {
   const { provincia, setOpen } = useProvincia();
@@ -16,8 +16,10 @@ export function Test() {
   const [imp, setImp] = useState<boolean[]>(() => Q.map(() => false));
   const [i, setI] = useState(0);
   const [done, setDone] = useState(false);
+  const [started, setStarted] = useState(false);
   const [grow, setGrow] = useState(false);
   const [ready, setReady] = useState(false);
+  const stats = statsPosiciones();
 
   useEffect(() => {
     try {
@@ -27,6 +29,7 @@ export function Test() {
         setAns(a); setImp(Array.isArray(s.imp) && s.imp.length === Q.length ? s.imp : Q.map(() => false));
         const first = a.findIndex((x: Ans) => x === undefined);
         setI(first === -1 ? 0 : first);
+        if (a.some(x => x !== undefined)) setStarted(true);
       }
     } catch {}
     setReady(true);
@@ -44,6 +47,23 @@ export function Test() {
   };
   const q = Q[i];
   const counted = countedAnswers(ans);
+  const banner = `Versión en revisión: ${stats.revisadas} de ${stats.total} posiciones revisadas`;
+
+  if (!started) {
+    return (
+      <section role="tabpanel" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div className="sheet">
+          <p className="aviso-rev">{banner}</p>
+          <h2>Test de afinidad</h2>
+          <p className="lede">32 afirmaciones. El resultado se calcula en tu dispositivo. No recomienda voto.</p>
+          <p className="privacidad">Privado por diseño. Tus respuestas se calculan en tu dispositivo y no se guardan.</p>
+          {!provincia && <p className="small"><button className="btn link" type="button" onClick={() => setOpen(true)}>Elige provincia</button> para incluir a los partidos de tu circunscripción.</p>}
+          <button className="btn primary" type="button" onClick={() => setStarted(true)}>Empezar</button>
+        </div>
+        <Metodo />
+      </section>
+    );
+  }
 
   if (done) {
     const ids = parties.map(p => p.id);
@@ -54,6 +74,7 @@ export function Test() {
     return (
       <section role="tabpanel" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="sheet">
+          <p className="aviso-rev">{banner}</p>
           <div className="row">
             <h2>Tu afinidad con cada partido</h2>
             <button className="btn" type="button" onClick={() => { setAns(Q.map(() => undefined)); setImp(Q.map(() => false)); setI(0); setDone(false); }}>Repetir test</button>
@@ -64,7 +85,7 @@ export function Test() {
           ) : (
             <>
               {why && <p className="why">{why}</p>}
-              <p className="small">Afinidad sobre {counted} respuestas no neutrales de {Q.length}{nImp ? `, con ${nImp} temas marcados como importantes` : ""}. El 50 % es el azar: por encima, coincides más que si respondieras al azar. No dice a quién votar. El resultado queda en tu navegador; no publicamos sondeos (la LOREG lo prohíbe desde el 24 de noviembre). <a href="/metodologia">Cómo se calcula</a>.</p>
+              <p className="small">Afinidad sobre {counted} respuestas no neutrales de {Q.length}{nImp ? `, con ${nImp} temas marcados como importantes` : ""}. El 50 % es el azar: por encima, coincides más que si respondieras al azar. No dice a quién votar. Papeleta Abierta no publica resultados agregados de las respuestas de sus usuarios. <a href="/metodologia">Cómo se calcula</a>.</p>
               <div className="results">
                 {r.map(p => (
                   <div className="bar" key={p.id}>
@@ -76,18 +97,23 @@ export function Test() {
               </div>
               <details open>
                 <summary>Compara pregunta a pregunta</summary>
-                <p className="small" style={{ marginTop: 8 }}>Escala: −2 muy en desacuerdo · 0 neutral · +2 muy de acuerdo. Un «—» significa que el partido no tiene posición conocida. Sombreado: coincides.</p>
+                <p className="small" style={{ marginTop: 8 }}>Escala: −2 muy en desacuerdo · 0 neutral · +2 muy de acuerdo. Un «—» significa que el partido no tiene posición conocida. Sombreado: coincides. Cada casilla indica el nivel de evidencia (A–E) y el estado.</p>
                 <div className="tablewrap" style={{ marginTop: 8 }}>
                   <table>
                     <thead><tr><th style={{ textAlign: "left" }}>Afirmación</th><th>Tú</th>{parties.map(p => <th key={p.id}>{p.name}</th>)}</tr></thead>
                     <tbody>
                       {Q.map((qq, j) => (
-                        <tr key={j}>
+                        <tr key={qq.id}>
                           <td className="q">{qq.s}{imp[j] && <strong> (×2)</strong>}</td>
-                          <td className="you"><span className="cell">{fmt(ans[j])}</span></td>
+                          <td className="you"><span className="cell">{fmtValor(ans[j])}</span></td>
                           {parties.map(p => {
                             const v = stanceOf(qq, p.id);
-                            return <td key={p.id}><span className={`cell ${ans[j] !== undefined && ans[j] !== null && v != null && ans[j] === v ? "match" : ""}`}>{fmt(v)}</span></td>;
+                            const pos = posicionDe(qq.id, p.id);
+                            return (
+                              <td key={p.id} className={ans[j] !== undefined && ans[j] !== null && v != null && ans[j] === v ? "match-td" : ""}>
+                                <PosicionVista pos={pos} compact />
+                              </td>
+                            );
                           })}
                         </tr>
                       ))}
@@ -106,6 +132,8 @@ export function Test() {
   return (
     <section role="tabpanel" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div className="sheet" aria-live="polite">
+        <p className="aviso-rev">{banner}</p>
+        <p className="privacidad">Privado por diseño. Tus respuestas se calculan en tu dispositivo y no se guardan.</p>
         <div className="ticks" aria-label="Progreso">
           {Q.map((_, j) => (
             <button key={j} type="button" aria-label={`Pregunta ${j + 1}`} onClick={() => go(j)}

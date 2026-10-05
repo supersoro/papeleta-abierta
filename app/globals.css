@@ -36,6 +36,7 @@ nav.tabs{display:grid;grid-template-columns:repeat(4,1fr);position:sticky;top:en
 .tab{font-family:var(--display);font-weight:700;font-size:.88rem;background:transparent;border:0;border-right:1px solid var(--line);color:var(--muted);padding:11px 6px;cursor:pointer}
 .tab:last-child{border-right:0}
 .tab[aria-selected="true"]{color:var(--ink);background:var(--accent-soft);box-shadow:inset 0 -3px 0 var(--accent)}
+.tab.quiet{font-weight:600;opacity:.85}
 .sheet{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:22px;display:flex;flex-direction:column;gap:18px}
 .dot{width:10px;height:10px;border-radius:50%;flex:none;display:inline-block}
 .small{font-size:.82rem;color:var(--muted);margin:0}
@@ -147,6 +148,25 @@ footer a,.brand a{color:inherit}
 
 .cite a{color:var(--accent)}
 .err{color:var(--warn);font-family:var(--mono);font-size:.82rem}
+.privacidad{margin:0;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.aviso-rev{margin:0;font-family:var(--mono);font-size:.75rem;color:var(--warn);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.error-link{font-size:.78rem}
+.medida-sec{margin:0;font-size:.95rem;color:var(--ink)}
+.hist-block{border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px}
+.hist-list{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:8px}
+.pos{display:flex;flex-direction:column;gap:4px;text-align:left}
+.pos-head{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.pos-item{padding-block:8px;border-top:1px dashed var(--line)}
+.pos-item:first-child{border-top:0;padding-top:0}
+.pos-enun{margin:0 0 4px;font-size:.95rem}
+.trow-pos{align-items:start}
+.nivel-E{background:var(--paper);border-color:var(--warn);color:var(--warn)}
+.cita-lit{margin:6px 0;padding:8px 10px;border-left:3px solid var(--line);font-size:.88rem;color:var(--muted)}
+.aviso-form{display:flex;flex-direction:column;gap:10px}
+.aviso-form textarea,.aviso-form input[type="url"],.aviso-form input[type="email"]{width:100%;font-family:var(--body);font-size:.95rem;padding:8px 10px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink)}
+.compare-afirm{display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+.corr-list{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:12px}
+.match-td{background:var(--accent-soft)}
 html,body{margin:0}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 [hidden]{display:none!important}

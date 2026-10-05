@@ -1,0 +1,35 @@
+[
+ {
+  "id": "amnistia-2024",
+  "titulo": "Ley Orgánica 1/2024 de amnistía · votación final en el Congreso",
+  "fecha": "2024-05-30",
+  "camara": "Congreso",
+  "fuente": null,
+  "resultado": "Aprobada 177-172",
+  "votos": { "PSOE": "si", "SUMAR": "si", "POD": "si", "ERC": "si", "JUNTS": "si", "BILDU": "si", "PNV": "si", "BNG": "si", "PP": "no", "VOX": "no", "UPN": "no", "CC": "no" },
+  "verificada": false,
+  "temas": ["territorio"]
+ },
+ {
+  "id": "jornada-2025",
+  "titulo": "Enmiendas a la totalidad al proyecto de ley de reducción de la jornada a 37,5 horas",
+  "fecha": "2025-09-10",
+  "camara": "Congreso",
+  "fuente": null,
+  "resultado": "Proyecto devuelto al Gobierno: 178 votos a favor de las enmiendas, 170 en contra",
+  "votos": { "PP": "si", "VOX": "si", "JUNTS": "si", "UPN": "si", "PSOE": "no", "SUMAR": "no", "POD": "no", "ERC": "no", "BILDU": "no", "PNV": "no", "BNG": "no" },
+  "verificada": false,
+  "temas": ["trabajo"]
+ },
+ {
+  "id": "delegacion-inmigracion-2025",
+  "titulo": "Ley orgánica de delegación en Cataluña de competencias de inmigración",
+  "fecha": null,
+  "camara": "Congreso",
+  "fuente": null,
+  "resultado": "Rechazada",
+  "votos": { "PP": "no", "VOX": "no", "POD": "no", "PSOE": "si", "SUMAR": "si", "JUNTS": "si" },
+  "verificada": false,
+  "temas": ["inmigracion", "territorio"]
+ }
+]

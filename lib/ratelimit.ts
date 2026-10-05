@@ -27,6 +27,24 @@ async function incr(key: string, ttlSec: number): Promise<number> {
   return e.n;
 }
 
+export async function checkAvisoLimit(ip: string): Promise<boolean> {
+  const minute = Math.floor(Date.now() / 60000);
+  const ipKey = await hash(ip);
+  const n = await incr(`aviso:${ipKey}:${minute}`, 60);
+  return n <= 3;
+}
+
+export async function redisCommand(cmds: string[][]): Promise<any[] | null> {
+  if (!URL_ || !TOKEN) return null;
+  const r = await fetch(`${URL_}/pipeline`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
+    body: JSON.stringify(cmds),
+    cache: "no-store",
+  });
+  return r.json();
+}
+
 export async function checkLimits(ip: string): Promise<{ ok: true } | { ok: false; reason: "minute" | "daily" }> {
   const minute = Math.floor(Date.now() / 60000);
   const day = new Date().toISOString().slice(0, 10);

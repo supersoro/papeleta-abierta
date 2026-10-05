@@ -1,8 +1,14 @@
 "use client";
 import { useState } from "react";
-import { PARTIES, TOPICS, KB, programaNota, type PartyId } from "@/lib/data";
+import { PARTIES, TOPICS, programaNota, type PartyId } from "@/lib/data";
+import { AFIRMACIONES, afirmacionesDeTopic, posicionDe } from "@/lib/posiciones";
+import { historialDePartido, votoTexto } from "@/lib/historial";
 import { useProvincia, useVisibleParties } from "./Provincia";
+import { PosicionVista } from "./PosicionVista";
+import { AvisoError } from "./AvisoError";
 import { Dot } from "./Dot";
+
+const TEMAS = [...new Set(AFIRMACIONES.map(a => a.tema))];
 
 export function Partidos() {
   const { provincia, setOpen } = useProvincia();
@@ -11,6 +17,7 @@ export function Partidos() {
   const [cur, setCur] = useState<PartyId>(list[0]?.id || "PP");
   const p = PARTIES.find(x => x.id === cur) || list[0];
   if (!p) return null;
+  const votos = historialDePartido(p.id);
   return (
     <section className="sheet" role="tabpanel">
       <div className="row">
@@ -37,15 +44,42 @@ export function Partidos() {
           <div><dt>Representación</dt><dd>{p.seats}</dd></div>
           <div><dt>Espacio</dt><dd>{p.family}</dd></div>
         </dl>
-        <p className="small"><span className="badge badge-res">{programaNota(p)}</span> · los textos mezclan programa y votaciones posteriores · <a className="ext" href={p.url} target="_blank" rel="noopener">Ver programa original</a></p>
+        <p className="small"><span className="badge badge-res">{programaNota(p)}</span> · <a className="ext" href={p.url} target="_blank" rel="noopener">Ver programa original</a></p>
+        <h3>Qué propone</h3>
         <div className="topiclist">
-          {TOPICS.map(([k, l]) => (
-            <div className="trow" key={k}>
-              <span className="tl">{l}</span>
-              <p>{KB[p.id]?.[k] || <em className="small">Sin propuesta recogida sobre este tema.</em>}</p>
-            </div>
-          ))}
+          {TEMAS.map(tema => {
+            const rows = AFIRMACIONES.filter(a => a.tema === tema);
+            return (
+              <div className="trow trow-pos" key={tema}>
+                <span className="tl">{tema}</span>
+                <div>
+                  {rows.map(a => {
+                    const pos = posicionDe(a.id, p.id);
+                    return (
+                      <div key={a.id} className="pos-item">
+                        <p className="pos-enun">{a.enunciado}</p>
+                        <PosicionVista pos={pos} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
+        {votos.length > 0 && (
+          <div>
+            <h3>Qué ha votado (2023-2026)</h3>
+            <ul className="hist-list">
+              {votos.map(h => (
+                <li key={h.id}>
+                  {votoTexto(h.votos[p.id])} · {h.titulo}{h.fecha ? ` (${h.fecha})` : ""} · <a href={h.fuente!} target="_blank" rel="noopener">Registro oficial</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <AvisoError partido={p.id} />
       </div>
     </section>
   );
@@ -59,6 +93,7 @@ export function Temas() {
   const [sel, setSel] = useState<PartyId[]>([]);
   const chosen = sel.length ? sel.filter(id => available.some(p => p.id === id)) : available.map(p => p.id);
   const shown = available.filter(p => chosen.includes(p.id));
+  const afirmaciones = afirmacionesDeTopic(k);
   const toggle = (id: PartyId) => {
     setSel(cur => {
       const base = cur.length ? cur : available.map(p => p.id);
@@ -71,7 +106,7 @@ export function Temas() {
     <section className="sheet" role="tabpanel">
       <div>
         <h2>Compárame</h2>
-        <p className="lede" style={{ marginTop: 6 }}>Elige al menos dos partidos y un tema. Los textos son resúmenes de Papeleta Abierta: mezclan programa electoral y, cuando aplica, votaciones posteriores.</p>
+        <p className="lede" style={{ marginTop: 6 }}>Elige al menos dos partidos y un tema. Cada posición sale de afirmaciones.json y posiciones.json, con su nivel de evidencia.</p>
       </div>
       <div className="row">
         {!provincia && <p className="small">Cinco partidos estatales. <button className="btn link" type="button" onClick={() => setOpen(true)}>Elige provincia</button></p>}
@@ -98,25 +133,25 @@ export function Temas() {
           </select>
         </label>
       </div>
-      <div className="answers">
-        {shown.map(p => (
-          <article key={p.id} className={`ans ${KB[p.id]?.[k] ? "" : "none"}`}>
-            <p className="ans-k">Partido</p>
-            <h3><Dot color={p.color} />{p.name}</h3>
-            <p className="ans-k">Propuesta</p>
-            <p>{KB[p.id]?.[k] || "No hay propuesta recogida sobre este tema."}</p>
-            <div className="src">
-              <p className="ans-k">Fuente</p>
-              <ul>
-                <li>
-                  <span className="badge badge-res">{programaNota(p)}</span>
-                  <a href={p.url} target="_blank" rel="noopener">{p.src}</a>
-                </li>
-              </ul>
-            </div>
-          </article>
-        ))}
-      </div>
+      {afirmaciones.map(a => (
+        <div key={a.id} className="compare-afirm">
+          <h3>{a.enunciado}</h3>
+          {a.contexto && <p className="small">{a.contexto}</p>}
+          <div className="answers">
+            {shown.map(p => {
+              const pos = posicionDe(a.id, p.id);
+              return (
+                <article key={p.id} className={`ans ${pos?.valor == null ? "none" : ""}`}>
+                  <p className="ans-k">Partido</p>
+                  <h3><Dot color={p.color} />{p.name}</h3>
+                  <p className="ans-k">Qué propone</p>
+                  <PosicionVista pos={pos} />
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </section>
   );
 }

@@ -8,9 +8,9 @@ import { ELECTION } from "@/lib/data";
 
 const TABS = [
   ["buscar", "Preguntar"],
-  ["test", "Test"],
-  ["partidos", "Partidos"],
   ["temas", "Comparar"],
+  ["partidos", "Partidos"],
+  ["test", "Test"],
 ] as const;
 type Tab = (typeof TABS)[number][0];
 
@@ -63,14 +63,14 @@ export default function Home() {
 
       <nav className="tabs" role="tablist" aria-label="Qué puedes hacer">
         {TABS.map(([id, label]) => (
-          <button key={id} className="tab" role="tab" type="button" aria-selected={tab === id} onClick={() => select(id)}>{label}</button>
+          <button key={id} className={`tab${id === "test" ? " quiet" : ""}`} role="tab" type="button" aria-selected={tab === id} onClick={() => select(id)}>{label}</button>
         ))}
       </nav>
 
       {tab === "buscar" && <Buscador />}
-      {tab === "test" && <Test />}
-      {tab === "partidos" && <Partidos />}
       {tab === "temas" && <Temas />}
+      {tab === "partidos" && <Partidos />}
+      {tab === "test" && <Test />}
 
       <details className="fineprint">
         <summary>Programas de 2023 · pendientes los de estas elecciones</summary>
@@ -78,13 +78,13 @@ export default function Home() {
         <ul>
           <li>Hasta que cada partido publique su programa de 2026, el buscador usa los del 23J de 2023 (Podemos: europeas de 2024), con aviso en cada ficha.</li>
           <li>Campaña prevista del {ELECTION.campaign}; {ELECTION.reflection}, jornada de reflexión.</li>
-          <li>El test y «qué ocurrió en la legislatura» recogen leyes y votaciones de 2023 a 2026. No publicamos resultados agregados del test (la LOREG prohíbe sondeos desde el {ELECTION.pollBanFrom}).</li>
+          <li>Papeleta Abierta no publica resultados agregados de las respuestas de sus usuarios.</li>
           <li>Las listas se presentan en los días siguientes a la convocatoria: candidaturas y posibles coaliciones se actualizarán entonces.</li>
         </ul>
-        <p>Cuando un partido publique su programa de estas elecciones, se sustituye el de 2023. Los resúmenes los redacta Papeleta Abierta; la fuente original manda.</p>
+        <p>Cuando un partido publique su programa de estas elecciones, se añaden esos registros y se conservan los de 2023. Los resúmenes los redacta Papeleta Abierta; la fuente original manda.</p>
       </details>
 
-      <footer>Los partidos estatales aparecen en todas las circunscripciones. ERC, Junts, EH Bildu, PNV, BNG, CC y UPN, solo donde se presentan. Las candidaturas de 2026 figuran como «por confirmar» hasta las listas (21-26 de octubre; definitivas el 3 de noviembre). <a href="/metodologia">Metodología</a>. Consulta siempre el programa original.</footer>
+      <footer>Los partidos estatales aparecen en todas las circunscripciones. ERC, Junts, EH Bildu, PNV, BNG, CC y UPN, solo donde se presentan. Las candidaturas de 2026 figuran como «por confirmar» hasta las listas (21-26 de octubre; definitivas el 3 de noviembre). <a href="/metodologia">Metodología</a> · <a href="/correcciones">Correcciones</a>. Consulta siempre el programa original.</footer>
     </div>
     </ProvinciaProvider>
   );

@@ -1,12 +1,23 @@
 "use client";
 import { useRef, useState } from "react";
-import { LEGISLATURA, topicName, type TopicKey } from "@/lib/data";
-import { useProvincia, useVisibleParties } from "./Provincia";
+import { PARTIES, topicName, type TopicKey } from "@/lib/data";
+import { useProvincia } from "./Provincia";
+import { AvisoError } from "./AvisoError";
 import { Dot } from "./Dot";
 
 type Cita = { fuente: string; pagina: number | null; url: string; tipo?: "programa" | "resumen" };
 type Resp = { id: string; menciona: boolean; titular?: string; respuesta: string; citas: Cita[] };
-type Result = { fuera_de_tema: boolean; sintesis?: string; nota_voto?: boolean; partidos: Resp[]; modo: string; tema?: TopicKey | null };
+type Hist = { id: string; titulo: string; fecha: string | null; fuente: string; votos: Record<string, string> };
+type Result = {
+  fuera_de_tema: boolean;
+  nota_voto?: boolean;
+  nota_valoracion?: boolean;
+  solo_nota?: boolean;
+  partidos: Resp[];
+  modo: string;
+  tema?: TopicKey | null;
+  historial?: Hist[];
+};
 
 const FEATURED = "¿Qué harán con el precio del alquiler?";
 const EXAMPLES = [
@@ -24,14 +35,12 @@ function goSection(e: React.MouseEvent<HTMLAnchorElement>, id: "test" | "temas")
 }
 
 function srcLine(c: Cita) {
-  const kind = c.tipo === "resumen" || c.pagina == null ? "Resumen" : "Programa";
   const page = c.pagina ? ` · p. ${c.pagina}` : "";
-  return `${kind}${page}`;
+  return `${c.fuente}${page}`;
 }
 
 export function Buscador() {
   const { provincia, setOpen } = useProvincia();
-  const parties = useVisibleParties();
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -60,13 +69,16 @@ export function Buscador() {
     }
   }
 
-  const hechos = res?.tema ? LEGISLATURA[res.tema] : undefined;
+  const shown = res?.partidos?.length
+    ? res.partidos.map(a => PARTIES.find(p => p.id === a.id)).filter((p): p is NonNullable<typeof p> => !!p)
+    : [];
 
   return (
     <section className="sheet hero" role="tabpanel">
       <div>
         <h1 className="ask-title">¿Qué quieres saber antes de votar?</h1>
-        <p className="lede">Pregunta sobre vivienda, impuestos, inmigración, energía, pensiones… Cada respuesta incluye sus fuentes.</p>
+        <p className="lede">Pregunta sobre vivienda, impuestos, inmigración, energía, pensiones… Cada respuesta incluye sus fuentes. O <a href="#temas" onClick={e => goSection(e, "temas")}>compara partidos por tema</a>.</p>
+        <p className="privacidad">No guardamos tus preguntas.</p>
         {!provincia && <p className="small">Responde por los cinco partidos estatales. <button className="btn link" type="button" onClick={() => setOpen(true)}>Elige provincia</button> para incluir a ERC, Junts, PNV, EH Bildu, BNG, CC o UPN si se presentan.</p>}
       </div>
       <form className="ask" onSubmit={e => { e.preventDefault(); run(q); }}>
@@ -87,17 +99,22 @@ export function Buscador() {
 
       {res && !res.fuera_de_tema && (
         <div className="answers" aria-live="polite">
-          {res.nota_voto && (
-            <p className="status">Esta web no recomienda a quién votar. Abajo están las propuestas sobre el tema. Si quieres una orientación personal, usa el <a href="#test" onClick={e => goSection(e, "test")}>test de afinidad</a> o <a href="#temas" onClick={e => goSection(e, "temas")}>compara por tema</a>.</p>
+          {(res.solo_nota || res.nota_voto) && !res.nota_valoracion && (
+            <p className="status">Esta web no recomienda a quién votar. Si quieres una orientación personal, usa el <a href="#test" onClick={e => goSection(e, "test")}>test de afinidad</a> o <a href="#temas" onClick={e => goSection(e, "temas")}>compara por tema</a>.</p>
           )}
-          {res.sintesis && <p className="sintesis">{res.sintesis}</p>}
-          {!(res.nota_voto && !res.partidos.some(p => p.menciona)) && parties.map(p => {
+          {res.nota_valoracion && (
+            <p className="status">Esta pregunta pide un criterio de valoración. Puedes comparar sus propuestas{res.tema ? ` sobre ${topicName(res.tema).toLowerCase()}` : ""}. Abajo están, sin ordenarlas por calidad.</p>
+          )}
+
+          {!res.solo_nota && shown.map(p => {
             const a = res.partidos.find(x => x.id === p.id);
-            const line = a?.titular || a?.respuesta;
+            const hist = (res.historial || []).filter(h => h.votos[p.id]);
             return (
               <article key={p.id} className={`ans ${a?.menciona ? "" : "none"}`}>
                 <h3><Dot color={p.color} />{p.name}</h3>
-                <p className="titular">{a?.menciona ? line : "Los textos consultados de este partido no tratan esta cuestión."}</p>
+                <p className="ans-k">Qué propone</p>
+                <p className="titular">{a?.menciona ? a.titular : "No consta en su programa."}</p>
+                {a?.menciona && a.respuesta && <p className="medida-sec">{a.respuesta}</p>}
                 {a?.menciona && a.citas[0] && (
                   <p className="src-line">
                     <span className={`badge ${a.citas[0].tipo === "resumen" || a.citas[0].pagina == null ? "badge-res" : "badge-prog"}`}>{srcLine(a.citas[0])}</span>
@@ -107,30 +124,28 @@ export function Buscador() {
                     ))}
                   </p>
                 )}
+                {hist.length > 0 && (
+                  <div className="hist-block">
+                    <p className="ans-k">Qué ha votado (2023-2026)</p>
+                    {hist.map(h => (
+                      <p key={h.id} className="small">
+                        En la legislatura votó {h.votos[p.id]} de {h.titulo}{h.fecha ? ` (${h.fecha})` : ""}.{" "}
+                        <a href={h.fuente} target="_blank" rel="noopener">Registro oficial</a>
+                      </p>
+                    ))}
+                  </div>
+                )}
+                <AvisoError partido={p.id} afirmacion="buscador" />
               </article>
             );
           })}
 
-          {hechos && hechos.length > 0 && (
-            <aside className="hecho">
-              <h3>¿Qué ocurrió en la legislatura?</h3>
-              <p className="small">Votaciones, leyes y actuaciones de 2023 a 2026 sobre {topicName(res.tema!).toLowerCase()}. No es programa: es lo que ya se ha hecho o votado.</p>
-              <ul>
-                {hechos.map((h, i) => (
-                  <li key={i}>
-                    <p>{h.hecho}</p>
-                    <span className="cite">{h.src}</span>
-                  </li>
-                ))}
-              </ul>
-            </aside>
-          )}
-
+          {!res.solo_nota && (
           <p className="small">
-            Las respuestas de arriba salen de los programas de 2023 (Podemos: 2024) hasta que se publiquen los de estas elecciones. Pueden contener errores: abre siempre la fuente.
+            Las respuestas de arriba salen de los programas de 2023 (Podemos: 2024) hasta que se publiquen los de estas elecciones. El origen del texto está en la etiqueta de la cita. Pueden contener errores: abre siempre la fuente.
             {res.modo !== "programas" ? " Algunos partidos se han consultado sobre resúmenes porque su PDF no está cargado." : ""}
-            {" "}No guardamos tus preguntas.
           </p>
+          )}
         </div>
       )}
     </section>

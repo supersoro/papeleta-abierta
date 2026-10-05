@@ -2,9 +2,9 @@
 // Para corregir una propuesta o una posición, edita este archivo.
 
 import { REGIONAL_KB, REGIONAL_PARTIES, partyIdsFor } from "./partidos-regionales";
-import { QUESTIONS as QUESTIONS_2026 } from "./test-2026";
+import { QUESTIONS as QUESTIONS_2026 } from "./posiciones";
 export { QUESTIONS_2026 as QUESTIONS };
-export { partyIdsFor, COMUNIDADES, PROVINCIAS, STATE_IDS, extraIds } from "./partidos-regionales";
+export { partyIdsFor, COMUNIDADES, PROVINCIAS, STATE_IDS, extraIds, resolveProvincia } from "./partidos-regionales";
 
 export type PartyId = "PP" | "PSOE" | "VOX" | "SUMAR" | "POD" | "ERC" | "JUNTS" | "BILDU" | "PNV" | "BNG" | "CC" | "UPN";
 export type Party = { id: PartyId; name: string; full: string; color: string; lead: string; seats: string; family: string; desc: string; src: string; url: string; programaYear: number };
@@ -18,7 +18,7 @@ export const ELECTION = {
   boe: "6 de octubre",
 };
 export type TopicKey = "trabajo" | "impuestos" | "vivienda" | "pensiones" | "inmigracion" | "sociedad" | "territorio" | "energia" | "educacion" | "sanidad" | "justicia" | "exterior";
-export type { Question } from "./test-2026";
+export type { Question } from "./posiciones";
 
 export const PARTIES: Party[] =[
  {id:"PP",name:"PP",full:"Partido Popular",color:"var(--pp)",lead:"Alberto Núñez Feijóo",seats:"137 escaños (2023)",family:"Centroderecha. Partido Popular Europeo.",
@@ -210,4 +210,31 @@ export function topicFromQuery(q: string): TopicKey | null {
     if (s > score) { score = s; best = k; }
   }
   return score ? best : null;
+}
+
+const PARTY_ALIASES: [PartyId, string[]][] = [
+  ["PP", ["\\bpp\\b", "partido popular"]],
+  ["PSOE", ["psoe", "partido socialista"]],
+  ["VOX", ["\\bvox\\b"]],
+  ["SUMAR", ["\\bsumar\\b"]],
+  ["POD", ["podemos"]],
+  ["ERC", ["\\berc\\b", "esquerra"]],
+  ["JUNTS", ["\\bjunts\\b"]],
+  ["BILDU", ["bildu", "eh bildu"]],
+  ["PNV", ["\\bpnv\\b", "eaj-pnv", "partido nacionalista vasco"]],
+  ["BNG", ["\\bbng\\b", "bloque nacionalista"]],
+  ["CC", ["coalicion canaria"]],
+  ["UPN", ["\\bupn\\b", "union del pueblo navarro"]],
+];
+
+/** Partidos nombrados en la pregunta: se incluyen aunque no haya provincia. */
+export function partiesNamedIn(q: string): PartyId[] {
+  const n = fold(q);
+  return PARTY_ALIASES.filter(([, als]) => als.some(a => new RegExp(a, "i").test(n))).map(([id]) => id);
+}
+
+export function partiesForQuery(provincia?: string | null, query?: string): Party[] {
+  const base = partiesFor(provincia);
+  const extra = (query ? partiesNamedIn(query) : []).filter(id => !base.some(p => p.id === id));
+  return extra.length ? [...base, ...PARTIES.filter(p => extra.includes(p.id))] : base;
 }

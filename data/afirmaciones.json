@@ -1,0 +1,226 @@
+[
+ {
+  "id": "jornada",
+  "tema": "Trabajo",
+  "enunciado": "La jornada laboral máxima debe bajar por ley a 37,5 horas semanales sin reducir el salario.",
+  "contexto": "El Congreso tumbó el proyecto en septiembre de 2025 con los votos de PP, Vox, Junts y UPN.",
+  "version_texto": 2
+ },
+ {
+  "id": "irpf",
+  "tema": "Impuestos",
+  "enunciado": "Si hay margen en las cuentas públicas, es preferible bajar el IRPF que aumentar el gasto público.",
+  "contexto": "Plantea la alternativa entre dos usos del mismo dinero.",
+  "version_texto": 2
+ },
+ {
+  "id": "grandes-fortunas",
+  "tema": "Impuestos",
+  "enunciado": "Deberían suprimirse los impuestos especiales a las grandes fortunas y a los beneficios de bancos y energéticas.",
+  "contexto": "Gravámenes aprobados desde 2022. En 2025 Junts y PNV no apoyaron prorrogar el de las energéticas.",
+  "version_texto": 2
+ },
+ {
+  "id": "sucesiones",
+  "tema": "Impuestos",
+  "enunciado": "El impuesto de sucesiones y donaciones debería bajar o eliminarse en toda España.",
+  "contexto": "Hoy lo regulan las comunidades autónomas; País Vasco y Navarra tienen su propio sistema foral.",
+  "version_texto": 2
+ },
+ {
+  "id": "alquiler",
+  "tema": "Vivienda",
+  "enunciado": "Las administraciones deben poder limitar el precio del alquiler en las zonas con precios tensionados.",
+  "contexto": "La Ley de Vivienda de 2023 lo permite si la comunidad lo solicita; Cataluña y el País Vasco lo aplican.",
+  "version_texto": 2
+ },
+ {
+  "id": "okupacion",
+  "tema": "Vivienda",
+  "enunciado": "Hay que acelerar por ley el desalojo de las viviendas ocupadas ilegalmente.",
+  "contexto": "En el Congreso se han debatido desde 2023 propuestas de desalojo en 24 a 48 horas.",
+  "version_texto": 2
+ },
+ {
+  "id": "turisticos",
+  "tema": "Vivienda",
+  "enunciado": "El Estado no debería imponer nuevos límites a los pisos turísticos.",
+  "contexto": "Hoy los regulan comunidades y ayuntamientos; Canarias y Cataluña han aprobado leyes propias.",
+  "version_texto": 2
+ },
+ {
+  "id": "regularizacion",
+  "tema": "Inmigración",
+  "enunciado": "Debe mantenerse la regularización extraordinaria de inmigrantes aprobada en 2026.",
+  "contexto": "Real Decreto de enero de 2026, pactado por el Gobierno con Podemos; Vox y gobiernos autonómicos del PP la han recurrido.",
+  "version_texto": 2
+ },
+ {
+  "id": "expulsiones",
+  "tema": "Inmigración",
+  "enunciado": "Hay que priorizar la expulsión de los inmigrantes en situación irregular.",
+  "contexto": "Incluye más repatriaciones y endurecer el arraigo.",
+  "version_texto": 2
+ },
+ {
+  "id": "competencias-inmigracion",
+  "tema": "Inmigración",
+  "enunciado": "Las comunidades autónomas deberían poder gestionar competencias de inmigración, como el control de permisos.",
+  "contexto": "En septiembre de 2025 el Congreso rechazó delegar competencias de inmigración en Cataluña con los votos de PP, Vox y Podemos.",
+  "version_texto": 2
+ },
+ {
+  "id": "eutanasia",
+  "tema": "Sociedad",
+  "enunciado": "La ley de eutanasia debería derogarse.",
+  "contexto": "Aprobada en 2021; PP y Vox la recurrieron al Tribunal Constitucional, que la avaló.",
+  "version_texto": 2
+ },
+ {
+  "id": "aborto",
+  "tema": "Sociedad",
+  "enunciado": "El derecho al aborto debería protegerse en la Constitución.",
+  "contexto": "El Gobierno propuso en 2025 incluirlo en la Constitución.",
+  "version_texto": 2
+ },
+ {
+  "id": "trans",
+  "tema": "Sociedad",
+  "enunciado": "Debe mantenerse la ley que permite cambiar el sexo registral por autodeterminación.",
+  "contexto": "Ley 4/2023, conocida como ley trans.",
+  "version_texto": 2
+ },
+ {
+  "id": "violencia-genero",
+  "tema": "Sociedad",
+  "enunciado": "La ley integral de violencia de género debería sustituirse por una ley de violencia intrafamiliar.",
+  "contexto": "Propuesta de Vox; el resto de partidos apoya el Pacto de Estado contra la Violencia de Género.",
+  "version_texto": 2
+ },
+ {
+  "id": "memoria",
+  "tema": "Memoria",
+  "enunciado": "La Ley de Memoria Democrática debería derogarse.",
+  "contexto": "Aprobada en 2022; PP y Vox anunciaron su derogación.",
+  "version_texto": 2
+ },
+ {
+  "id": "amnistia",
+  "tema": "Territorio",
+  "enunciado": "La ley de amnistía para los encausados del procés debe mantenerse en vigor.",
+  "contexto": "Aprobada en 2024 por 177 votos a favor y 172 en contra.",
+  "version_texto": 2
+ },
+ {
+  "id": "referendum-cat",
+  "tema": "Territorio",
+  "enunciado": "Debería permitirse un referéndum pactado sobre la independencia de Cataluña.",
+  "contexto": "La Constitución no lo contempla hoy.",
+  "version_texto": 2
+ },
+ {
+  "id": "financiacion",
+  "tema": "Territorio",
+  "enunciado": "Cataluña debería recaudar y gestionar todos sus impuestos, como el País Vasco y Navarra.",
+  "contexto": "La llamada financiación singular acordada entre PSC y ERC en 2024.",
+  "version_texto": 2
+ },
+ {
+  "id": "independencia",
+  "tema": "Territorio",
+  "enunciado": "Cataluña, el País Vasco o Galicia deberían poder llegar a ser Estados independientes.",
+  "contexto": "Distinto del referéndum: pregunta por el objetivo, no por el procedimiento.",
+  "version_texto": 2
+ },
+ {
+  "id": "recentralizar",
+  "tema": "Territorio",
+  "enunciado": "El Estado debería recuperar competencias autonómicas como educación o sanidad.",
+  "contexto": "Hoy las gestionan las comunidades autónomas.",
+  "version_texto": 2
+ },
+ {
+  "id": "concierto",
+  "tema": "Territorio",
+  "enunciado": "Deberían mantenerse el concierto económico vasco y el convenio navarro.",
+  "contexto": "Sistemas forales por los que País Vasco y Navarra recaudan sus propios impuestos.",
+  "version_texto": 2
+ },
+ {
+  "id": "lengua-empleo",
+  "tema": "Territorio",
+  "enunciado": "Las comunidades con lengua propia deben poder exigirla para acceder a empleos públicos.",
+  "contexto": "Afecta al catalán, euskera, gallego y valenciano.",
+  "version_texto": 2
+ },
+ {
+  "id": "nucleares",
+  "tema": "Energía",
+  "enunciado": "Las centrales nucleares deberían seguir funcionando más allá del calendario de cierre previsto.",
+  "contexto": "El plan vigente prevé cerrarlas entre 2027 y 2035.",
+  "version_texto": 2
+ },
+ {
+  "id": "transicion",
+  "tema": "Clima",
+  "enunciado": "Habría que retrasar objetivos climáticos como el fin de la venta de coches de combustión en 2035.",
+  "contexto": "Objetivo fijado por la Unión Europea, que se está revisando.",
+  "version_texto": 2
+ },
+ {
+  "id": "concertada",
+  "tema": "Educación",
+  "enunciado": "Hay que reducir progresivamente la financiación pública de la escuela concertada en favor de la pública.",
+  "contexto": "Los colegios concertados son privados financiados con fondos públicos.",
+  "version_texto": 2
+ },
+ {
+  "id": "sanidad-privada",
+  "tema": "Sanidad",
+  "enunciado": "La sanidad pública debería derivar más pruebas y operaciones a centros privados.",
+  "contexto": "Es una de las fórmulas propuestas para reducir las listas de espera.",
+  "version_texto": 2
+ },
+ {
+  "id": "cgpj",
+  "tema": "Justicia",
+  "enunciado": "El Parlamento debe seguir eligiendo a los miembros del Consejo General del Poder Judicial.",
+  "contexto": "La alternativa es que los jueces elijan a la mayoría, como recomienda la Comisión Europea.",
+  "version_texto": 2
+ },
+ {
+  "id": "monarquia",
+  "tema": "Instituciones",
+  "enunciado": "La monarquía parlamentaria es la forma de Estado adecuada para España.",
+  "contexto": "",
+  "version_texto": 2
+ },
+ {
+  "id": "defensa",
+  "tema": "Defensa",
+  "enunciado": "España debe aumentar el gasto en defensa hasta al menos el 2 % del PIB.",
+  "contexto": "Compromiso con la OTAN; España alcanzó esa cifra en 2025 y rechazó el objetivo del 5 %.",
+  "version_texto": 2
+ },
+ {
+  "id": "ucrania",
+  "tema": "Exterior",
+  "enunciado": "España debe seguir enviando ayuda militar a Ucrania.",
+  "contexto": "España ha enviado material militar a Ucrania desde 2022.",
+  "version_texto": 2
+ },
+ {
+  "id": "israel",
+  "tema": "Exterior",
+  "enunciado": "España debe aplicar un embargo comercial y de armas a Israel por la guerra en Gaza.",
+  "contexto": "El Gobierno reconoció a Palestina en 2024 y aprobó un embargo de armas en 2025.",
+  "version_texto": 2
+ },
+ {
+  "id": "ue",
+  "tema": "Exterior",
+  "enunciado": "La Unión Europea debería asumir más competencias que hoy tienen los Estados.",
+  "contexto": "Por ejemplo en defensa, política fiscal o migración.",
+  "version_texto": 2
+ }
+]

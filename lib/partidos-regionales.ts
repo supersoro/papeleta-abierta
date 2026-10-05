@@ -73,9 +73,29 @@ const EXTRA: Record<string, PartyId[]> = {
 
 export const STATE_IDS: PartyId[] = ["PP", "PSOE", "VOX", "SUMAR", "POD"];
 
+function fold(s: string) {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+/** Acepta el id, el nombre o mayúsculas/tildes: «Barcelona», «barcelona», «Álava». */
+export function resolveProvincia(input?: string | null): string | null {
+  if (!input) return null;
+  const raw = input.trim();
+  if (EXTRA[raw]) return raw;
+  const n = fold(raw).replace(/[\s/_]+/g, " ").trim();
+  const found = PROVINCIAS.find(p => {
+    const id = fold(p.id);
+    const name = fold(p.name);
+    const parts = name.split(/[/,]/).map(s => s.trim()).filter(Boolean);
+    return id === n.replace(/\s+/g, "-") || id === n || name === n || parts.includes(n);
+  });
+  return found?.id ?? null;
+}
+
 export function extraIds(provincia?: string | null): PartyId[] {
-  if (!provincia) return [];
-  return EXTRA[provincia] || [];
+  const id = resolveProvincia(provincia);
+  if (!id) return [];
+  return EXTRA[id] || [];
 }
 
 export function partyIdsFor(provincia?: string | null): PartyId[] {

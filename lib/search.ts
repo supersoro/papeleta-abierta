@@ -37,9 +37,22 @@ export function buildIndex(chunks: Chunk[]): Index {
   return { chunks, tf, len, df, avg };
 }
 
+const EXPAND: { re: RegExp; extra: string }[] = [
+  { re: /financiaci[oó]n.{0,24}catalu/i, extra: "financiacion autonomica modelo de financiacion comunidades autonomas sistema de financiacion" },
+  { re: /financiaci[oó]n singular/i, extra: "financiacion autonomica cataluna concierto economico" },
+];
+
+export function expandQuery(query: string): string {
+  let q = query;
+  for (const { re, extra } of EXPAND) {
+    if (re.test(q)) q += " " + extra;
+  }
+  return q;
+}
+
 export function search(idx: Index, query: string, opts: { party?: string; k?: number } = {}): { chunk: Chunk; score: number }[] {
   const k1 = 1.4, b = 0.75, N = idx.chunks.length;
-  const q = [...new Set(tokenize(query))];
+  const q = [...new Set(tokenize(expandQuery(query)))];
   const out: { chunk: Chunk; score: number }[] = [];
   idx.chunks.forEach((c, i) => {
     if (opts.party && c.party !== opts.party) return;

@@ -7,7 +7,7 @@
 // Solo se calcula para los partidos que se presentan en la provincia del usuario.
 
 import { PARTIES, type Party, type PartyId } from "./data";
-import { QUESTIONS, ORDER } from "./test-2026";
+import { QUESTIONS, ORDER } from "./posiciones";
 
 export type Answer = -2 | -1 | 0 | 1 | 2 | null | undefined; // null = saltada, undefined = sin responder
 
