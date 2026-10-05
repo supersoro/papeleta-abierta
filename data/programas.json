@@ -1,0 +1,37 @@
+[
+  {
+    "party": "PP",
+    "title": "Programa electoral PP · Generales 2023",
+    "url": "https://www.pp.es/actualidad/articulos/programa-electoral-propone-365-medidas-reconstruccion-economica-social-e/",
+    "pdf": null,
+    "file": "data/pdfs/pp-2023.pdf"
+  },
+  {
+    "party": "PSOE",
+    "title": "Programa electoral PSOE · Generales 2023",
+    "url": "https://www.psoe.es/media-content/2023/07/PROGRAMA_ELECTORAL-GENERALES-2023.pdf",
+    "pdf": "https://www.psoe.es/media-content/2023/07/PROGRAMA_ELECTORAL-GENERALES-2023.pdf",
+    "file": "data/pdfs/psoe-2023.pdf"
+  },
+  {
+    "party": "VOX",
+    "title": "Programa electoral Vox · Generales 2023",
+    "url": "https://www.voxespana.es/programa/programa-electoral-vox",
+    "pdf": "https://www.voxespana.es/wp-content/uploads/2023/07/Programa-VOX-2023-con-menos-peso.pdf",
+    "file": "data/pdfs/vox-2023.pdf"
+  },
+  {
+    "party": "SUMAR",
+    "title": "Programa electoral Sumar · Generales 2023",
+    "url": "https://movimientosumar.es/programa-electoral-23j/",
+    "pdf": null,
+    "file": "data/pdfs/sumar-2023.pdf"
+  },
+  {
+    "party": "POD",
+    "title": "Programa Podemos · Europeas 2024",
+    "url": "https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf",
+    "pdf": "https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf",
+    "file": "data/pdfs/podemos-2024.pdf"
+  }
+]
