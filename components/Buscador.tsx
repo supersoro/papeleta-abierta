@@ -7,12 +7,13 @@ type Cita = { fuente: string; pagina: number | null; url: string; tipo?: "progra
 type Resp = { id: string; menciona: boolean; titular?: string; respuesta: string; citas: Cita[] };
 type Result = { fuera_de_tema: boolean; sintesis?: string; partidos: Resp[]; modo: string; tema?: TopicKey | null };
 
+const FEATURED = "¿Qué harán con el precio del alquiler?";
 const EXAMPLES = [
+  FEATURED,
   "¿Quién propone construir más vivienda?",
   "¿Qué partidos quieren mantener las nucleares?",
   "Compárame PSOE y PP en impuestos",
   "¿Qué dicen sobre inmigración?",
-  "¿Quién quiere bajar el IRPF?",
 ];
 
 function srcLine(c: Cita) {
@@ -66,7 +67,7 @@ export function Buscador() {
       </form>
       <div className="chips">
         {EXAMPLES.map(x => (
-          <button key={x} className="chip" type="button" onClick={() => { setQ(x); run(x); }}>{x}</button>
+          <button key={x} className={`chip${x === FEATURED ? " featured" : ""}`} type="button" onClick={() => { setQ(x); run(x); }}>{x}</button>
         ))}
       </div>
 
@@ -113,7 +114,7 @@ export function Buscador() {
           )}
 
           <p className="small">
-            Las respuestas de arriba salen de los programas (o de un resumen, si el distintivo lo indica). Pueden contener errores: abre siempre la fuente.
+            Las respuestas de arriba salen de los programas de 2023 (Podemos: 2024) hasta que se publiquen los de estas elecciones. Pueden contener errores: abre siempre la fuente.
             {res.modo !== "programas" ? " Algunos partidos se han consultado sobre resúmenes porque su PDF no está cargado." : ""}
             {" "}No guardamos tus preguntas.
           </p>

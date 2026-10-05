@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Papeleta Abierta",
-  description: "Consulta los programas electorales, compara partidos por tema y haz el test de afinidad para las elecciones generales.",
+  description: "Elecciones generales del 29 de noviembre de 2026: consulta los programas, compara partidos y haz el test de afinidad. Cada respuesta con su fuente.",
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 

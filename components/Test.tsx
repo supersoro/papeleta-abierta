@@ -114,7 +114,7 @@ export function Test() {
           </div>
           {answered === 0 ? <p className="small">No has respondido ninguna pregunta. Repite el test para ver tu resultado.</p> : <>
             {why && <p className="why">{why}</p>}
-            <p className="small">Afinidad global sobre {answered} de {Q.length} respuestas{nImp ? `, con ${nImp} temas marcados como importantes` : ""}.{answered < 10 ? " Con pocas respuestas el resultado es poco fiable." : ""} No dice a quién votar: solo mide distancia entre tus respuestas y la posición de cada partido.</p>
+            <p className="small">Afinidad global sobre {answered} de {Q.length} respuestas{nImp ? `, con ${nImp} temas marcados como importantes` : ""}.{answered < 10 ? " Con pocas respuestas el resultado es poco fiable." : ""} No dice a quién votar: solo mide la distancia entre tus respuestas y la posición de cada partido. El resultado queda en tu navegador; no publicamos sondeos ni totales de quienes hacen el test (la LOREG lo prohíbe desde el 24 de noviembre).</p>
             <div className="results">
               {r.map(p => (
                 <div className="bar" key={p.id}>

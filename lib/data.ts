@@ -2,27 +2,42 @@
 // Para corregir una propuesta o una posición, edita este archivo.
 
 export type PartyId = "PP" | "PSOE" | "VOX" | "SUMAR" | "POD";
-export type Party = { id: PartyId; name: string; full: string; color: string; lead: string; seats: string; family: string; desc: string; src: string; url: string };
+export type Party = { id: PartyId; name: string; full: string; color: string; lead: string; seats: string; family: string; desc: string; src: string; url: string; programaYear: number };
+
+export const ELECTION = {
+  iso: "2026-11-29",
+  label: "29 de noviembre de 2026",
+  campaign: "13 al 27 de noviembre",
+  reflection: "28 de noviembre",
+  pollBanFrom: "24 de noviembre",
+  boe: "6 de octubre",
+};
 export type TopicKey = "trabajo" | "impuestos" | "vivienda" | "pensiones" | "inmigracion" | "sociedad" | "territorio" | "energia" | "educacion" | "sanidad" | "justicia" | "exterior";
 export type Question = { t: string; s: string; c: string; p: [number, number, number, number, number]; src: string };
 
 export const PARTIES: Party[] =[
  {id:"PP",name:"PP",full:"Partido Popular",color:"var(--pp)",lead:"Alberto Núñez Feijóo",seats:"137 escaños (2023)",family:"Centroderecha. Partido Popular Europeo.",
   desc:"Partido conservador y liberal, primera fuerza en 2023. Lidera la oposición.",
-  src:"Programa 23J 2023 (365 medidas)",url:"https://www.pp.es/actualidad/articulos/programa-electoral-propone-365-medidas-reconstruccion-economica-social-e/"},
+  src:"Programa 23J 2023 (365 medidas)",url:"https://www.pp.es/actualidad/articulos/programa-electoral-propone-365-medidas-reconstruccion-economica-social-e/",programaYear:2023},
  {id:"PSOE",name:"PSOE",full:"Partido Socialista Obrero Español",color:"var(--psoe)",lead:"Pedro Sánchez",seats:"121 escaños (2023)",family:"Centroizquierda. Socialistas Europeos.",
   desc:"Partido socialdemócrata. Gobierna en coalición con Sumar desde 2023.",
-  src:"Programa 23J 2023",url:"https://www.psoe.es/media-content/2023/07/PROGRAMA_ELECTORAL-GENERALES-2023.pdf"},
+  src:"Programa 23J 2023",url:"https://www.psoe.es/media-content/2023/07/PROGRAMA_ELECTORAL-GENERALES-2023.pdf",programaYear:2023},
  {id:"VOX",name:"Vox",full:"Vox",color:"var(--vox)",lead:"Santiago Abascal",seats:"33 escaños (2023)",family:"Derecha radical. Patriotas por Europa.",
   desc:"Partido nacionalista español y conservador, centrado en inmigración, unidad territorial y soberanía.",
-  src:"Programa 23J 2023",url:"https://www.voxespana.es/programa/programa-electoral-vox"},
- {id:"SUMAR",name:"Sumar",full:"Sumar",color:"var(--sumar)",lead:"Por designar (Yolanda Díaz no repetirá)",seats:"31 escaños (2023, incluía a Podemos)",family:"Izquierda. Coalición de IU, Más Madrid, Comuns y otros.",
-  desc:"Plataforma de izquierda y ecologista. Socio minoritario del Gobierno de coalición.",
-  src:"Programa 23J 2023",url:"https://movimientosumar.es/programa-electoral-23j/"},
+  src:"Programa 23J 2023",url:"https://www.voxespana.es/programa/programa-electoral-vox",programaYear:2023},
+ {id:"SUMAR",name:"Sumar",full:"Sumar",color:"var(--sumar)",lead:"Por designar (listas aún no presentadas)",seats:"31 escaños (2023, incluía a Podemos)",family:"Izquierda. Coalición de IU, Más Madrid, Comuns y otros.",
+  desc:"Plataforma de izquierda y ecologista. Socio minoritario del Gobierno de coalición. Encabezamiento de estas elecciones, pendiente de las listas.",
+  src:"Programa 23J 2023",url:"https://movimientosumar.es/programa-electoral-23j/",programaYear:2023},
  {id:"POD",name:"Podemos",full:"Podemos",color:"var(--podemos)",lead:"Irene Montero",seats:"4 diputados en el Grupo Mixto (salió de Sumar en 2023)",family:"Izquierda. La Izquierda Europea.",
-  desc:"Partido de izquierda. Concurrió dentro de Sumar en 2023 y ahora se presenta por separado.",
-  src:"Programa europeas 2024 y posiciones públicas",url:"https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf"}
+  desc:"Partido de izquierda. Concurrió dentro de Sumar en 2023; en estas elecciones se presenta por separado, a falta de coaliciones.",
+  src:"Programa europeas 2024 y posiciones públicas",url:"https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf",programaYear:2024}
 ];
+
+export function programaNota(p: Party) {
+  return p.id === "POD"
+    ? "Programa europeas 2024 · pendiente el de estas elecciones"
+    : "Programa 23J 2023 · pendiente el de estas elecciones";
+}
 
 export const TOPICS: [TopicKey, string][] =[
  ["trabajo","Trabajo y salarios"],["impuestos","Impuestos"],["vivienda","Vivienda"],["pensiones","Pensiones"],
@@ -111,6 +126,8 @@ export const QUESTIONS: Question[] =[
  {t:"Impuestos",s:"El impuesto de sucesiones y donaciones debería bajar o eliminarse en toda España.",c:"Hoy lo regulan las comunidades autónomas y varía mucho entre ellas.",p:[2,-1,2,-2,-2],src:"Programas 23J 2023"},
  {t:"Vivienda",s:"El Estado debe poder limitar el precio del alquiler en las zonas con precios tensionados.",c:"La Ley de Vivienda de 2023 lo permite si la comunidad autónoma lo solicita.",p:[-2,1,-2,2,2],src:"Ley 12/2023 y su tramitación; programas 2023"},
  {t:"Vivienda",s:"Las viviendas ocupadas ilegalmente deben poder desalojarse en un plazo de 24 a 48 horas.",c:"Propuestas de desalojo exprés debatidas en el Congreso varias veces desde 2023.",p:[2,0,2,-1,-2],src:"Programas 2023; proposiciones de ley PP y Vox"},
+ {t:"Vivienda",s:"El Estado debe construir un gran parque público de alquiler, aunque tarde varias legislaturas.",c:"El adelanto del 29 de noviembre de 2026 se produce tras tumbar el Congreso dos decretos de vivienda (PP, Vox y Junts).",p:[0,2,-1,2,2],src:"Programas 2023; votación de decretos de vivienda, 2-10-2026"},
+ {t:"Vivienda",s:"Hay que limitar los pisos turísticos en las ciudades con el alquiler tensionado.",c:"Una de las medidas más debatidas en 2025 y 2026, junto a la oferta de vivienda nueva.",p:[0,1,-1,2,2],src:"Programas 2023; debate público 2025-2026"},
  {t:"Inmigración",s:"La regularización extraordinaria de inmigrantes aprobada en 2026 fue una medida acertada.",c:"Real Decreto de enero de 2026, pactado por el Gobierno con Podemos; Vox y gobiernos autonómicos del PP la han recurrido.",p:[-1,2,-2,2,2],src:"RD 316/2026; recursos de Vox y CC. AA. del PP"},
  {t:"Inmigración",s:"Hay que priorizar la expulsión de los inmigrantes en situación irregular.",c:"Incluye repatriaciones y endurecer el arraigo.",p:[1,-1,2,-2,-2],src:"Programas 2023; iniciativas de Vox 2026"},
  {t:"Sociedad",s:"Debe mantenerse la ley de eutanasia tal como está.",c:"Aprobada en 2021; PP y Vox la recurrieron al Tribunal Constitucional, que la avaló.",p:[-1,2,-2,2,2],src:"LO 3/2021; recursos ante el TC"},
@@ -148,6 +165,7 @@ export const LEGISLATURA: Partial<Record<TopicKey, Hecho[]>> = {
   vivienda: [
     { hecho: "La Ley 12/2023 permite limitar el alquiler en zonas tensionadas si lo pide la comunidad. Varias comunidades del PP no la aplican.", src: "Ley 12/2023 y su aplicación autonómica" },
     { hecho: "El Bono Alquiler Joven y los avales ICO se han mantenido o ampliado durante la legislatura.", src: "Plan Estatal de Vivienda; convenios ICO" },
+    { hecho: "El 2 de octubre de 2026 el Congreso tumbó dos decretos de vivienda (votos de PP, Vox y Junts). El 5 de octubre Sánchez convocó elecciones para el 29 de noviembre.", src: "Votación Congreso 2-10-2026; declaración institucional 5-10-2026" },
   ],
   pensiones: [
     { hecho: "La revalorización con el IPC quedó fijada por ley y se ha aplicado cada año de la legislatura.", src: "Ley 21/2021 y reales decretos anuales" },

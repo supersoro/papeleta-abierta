@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { PARTIES, TOPICS, KB, type PartyId } from "@/lib/data";
+import { PARTIES, TOPICS, KB, programaNota, type PartyId } from "@/lib/data";
 import { Dot } from "./Dot";
 
 export function Partidos() {
@@ -25,7 +25,7 @@ export function Partidos() {
           <div><dt>Representación</dt><dd>{p.seats}</dd></div>
           <div><dt>Espacio</dt><dd>{p.family}</dd></div>
         </dl>
-        <p className="small">Fuente: {p.src} · los textos mezclan programa y votaciones posteriores · <a className="ext" href={p.url} target="_blank" rel="noopener">Ver programa original</a></p>
+        <p className="small"><span className="badge badge-res">{programaNota(p)}</span> · los textos mezclan programa y votaciones posteriores · <a className="ext" href={p.url} target="_blank" rel="noopener">Ver programa original</a></p>
         <div className="topiclist">
           {TOPICS.map(([k, l]) => (
             <div className="trow" key={k}>
@@ -85,7 +85,7 @@ export function Temas() {
               <p className="ans-k">Fuente</p>
               <ul>
                 <li>
-                  <span className="badge badge-res">Resumen · incluye votaciones</span>
+                  <span className="badge badge-res">{programaNota(p)}</span>
                   <a href={p.url} target="_blank" rel="noopener">{p.src}</a>
                 </li>
               </ul>
