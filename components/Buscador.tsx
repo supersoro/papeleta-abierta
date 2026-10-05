@@ -1,19 +1,25 @@
 "use client";
 import { useRef, useState } from "react";
-import { PARTIES } from "@/lib/data";
+import { LEGISLATURA, PARTIES, topicName, type TopicKey } from "@/lib/data";
 import { Dot } from "./Dot";
 
-type Cita = { fuente: string; pagina: number | null; url: string };
-type Resp = { id: string; menciona: boolean; respuesta: string; citas: Cita[] };
-type Result = { fuera_de_tema: boolean; partidos: Resp[]; modo: string };
+type Cita = { fuente: string; pagina: number | null; url: string; tipo?: "programa" | "resumen" };
+type Resp = { id: string; menciona: boolean; titular?: string; respuesta: string; citas: Cita[] };
+type Result = { fuera_de_tema: boolean; sintesis?: string; partidos: Resp[]; modo: string; tema?: TopicKey | null };
 
 const EXAMPLES = [
-  "¿Qué harán con el precio del alquiler?",
-  "¿Quién quiere bajar impuestos?",
-  "¿Qué proponen sobre las nucleares?",
+  "¿Quién propone construir más vivienda?",
+  "¿Qué partidos quieren mantener las nucleares?",
+  "Compárame PSOE y PP en impuestos",
   "¿Qué dicen sobre inmigración?",
-  "¿Qué proponen para reducir las listas de espera?",
+  "¿Quién quiere bajar el IRPF?",
 ];
+
+function srcLine(c: Cita) {
+  const kind = c.tipo === "resumen" || c.pagina == null ? "Resumen" : "Programa";
+  const page = c.pagina ? ` · p. ${c.pagina}` : "";
+  return `${kind}${page}`;
+}
 
 export function Buscador() {
   const [q, setQ] = useState("");
@@ -44,12 +50,17 @@ export function Buscador() {
     }
   }
 
+  const hechos = res?.tema ? LEGISLATURA[res.tema] : undefined;
+
   return (
-    <section className="sheet" role="tabpanel">
-      <h2>¿Qué propone cada partido sobre…?</h2>
+    <section className="sheet hero" role="tabpanel">
+      <div>
+        <h1 className="ask-title">¿Qué quieres saber antes de votar?</h1>
+        <p className="lede">Pregunta sobre vivienda, impuestos, inmigración, energía, pensiones… Cada respuesta incluye sus fuentes.</p>
+      </div>
       <form className="ask" onSubmit={e => { e.preventDefault(); run(q); }}>
         <input id="q" type="text" autoComplete="off" maxLength={300} value={q} onChange={e => setQ(e.target.value)}
-          placeholder="Por ejemplo: ¿qué harán con el precio del alquiler?" aria-label="Tu pregunta" />
+          placeholder="¿Qué partidos quieren aumentar la oferta de vivienda?" aria-label="Tu pregunta" />
         <button className="btn primary" type="submit" disabled={loading}>Preguntar</button>
         {loading && <button className="btn" type="button" onClick={() => ctl.current?.abort()}>Parar</button>}
       </form>
@@ -65,29 +76,49 @@ export function Buscador() {
 
       {res && !res.fuera_de_tema && (
         <div className="answers" aria-live="polite">
+          {res.sintesis && <p className="sintesis">{res.sintesis}</p>}
           {PARTIES.map(p => {
             const a = res.partidos.find(x => x.id === p.id);
+            const line = a?.titular || a?.respuesta;
             return (
-              <div key={p.id} className={`ans ${a?.menciona ? "" : "none"}`}>
+              <article key={p.id} className={`ans ${a?.menciona ? "" : "none"}`}>
                 <h3><Dot color={p.color} />{p.name}</h3>
-                <p>{a?.menciona ? a.respuesta : "Los textos consultados de este partido no tratan esta cuestión."}</p>
-                {a?.menciona && a.citas.length > 0 && (
-                  <span className="cite">
-                    {a.citas.map((c, i) => (
-                      <span key={i}>{i > 0 && " · "}<a href={c.url} target="_blank" rel="noopener">{c.fuente}{c.pagina ? `, p. ${c.pagina}` : ""}</a></span>
+                <p className="titular">{a?.menciona ? line : "Los textos consultados de este partido no tratan esta cuestión."}</p>
+                {a?.menciona && a.citas[0] && (
+                  <p className="src-line">
+                    <span className={`badge ${a.citas[0].tipo === "resumen" || a.citas[0].pagina == null ? "badge-res" : "badge-prog"}`}>{srcLine(a.citas[0])}</span>
+                    <a href={a.citas[0].url} target="_blank" rel="noopener">Ver fuente</a>
+                    {a.citas.slice(1).map((c, i) => (
+                      <a key={i} href={c.url} target="_blank" rel="noopener">{srcLine(c)}</a>
                     ))}
-                  </span>
+                  </p>
                 )}
-              </div>
+              </article>
             );
           })}
-          {res.modo !== "programas" && (
-            <p className="small">Algunos partidos se han consultado sobre los resúmenes de esta web porque su programa aún no está cargado.</p>
+
+          {hechos && hechos.length > 0 && (
+            <aside className="hecho">
+              <h3>¿Qué ocurrió en la legislatura?</h3>
+              <p className="small">Votaciones, leyes y actuaciones de 2023 a 2026 sobre {topicName(res.tema!).toLowerCase()}. No es programa: es lo que ya se ha hecho o votado.</p>
+              <ul>
+                {hechos.map((h, i) => (
+                  <li key={i}>
+                    <p>{h.hecho}</p>
+                    <span className="cite">{h.src}</span>
+                  </li>
+                ))}
+              </ul>
+            </aside>
           )}
+
+          <p className="small">
+            Las respuestas de arriba salen de los programas (o de un resumen, si el distintivo lo indica). Pueden contener errores: abre siempre la fuente.
+            {res.modo !== "programas" ? " Algunos partidos se han consultado sobre resúmenes porque su PDF no está cargado." : ""}
+            {" "}No guardamos tus preguntas.
+          </p>
         </div>
       )}
-
-      <p className="small">Las respuestas se generan con IA a partir de los programas electorales, con su página de origen. No valoran ni recomiendan voto, y pueden contener errores: comprueba siempre la fuente. No guardamos tus preguntas.</p>
     </section>
   );
 }

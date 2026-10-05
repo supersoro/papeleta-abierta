@@ -25,7 +25,7 @@ export function Partidos() {
           <div><dt>Representación</dt><dd>{p.seats}</dd></div>
           <div><dt>Espacio</dt><dd>{p.family}</dd></div>
         </dl>
-        <p className="small">Fuente: {p.src} · <a className="ext" href={p.url} target="_blank" rel="noopener">Ver programa original</a></p>
+        <p className="small">Fuente: {p.src} · los textos mezclan programa y votaciones posteriores · <a className="ext" href={p.url} target="_blank" rel="noopener">Ver programa original</a></p>
         <div className="topiclist">
           {TOPICS.map(([k, l]) => (
             <div className="trow" key={k}>
@@ -41,10 +41,32 @@ export function Partidos() {
 
 export function Temas() {
   const [k, setK] = useState(TOPICS[0][0]);
+  const [sel, setSel] = useState<PartyId[]>(() => PARTIES.map(p => p.id));
+  const toggle = (id: PartyId) => {
+    setSel(cur => {
+      if (cur.includes(id)) return cur.length <= 2 ? cur : cur.filter(x => x !== id);
+      return [...cur, id];
+    });
+  };
+  const shown = PARTIES.filter(p => sel.includes(p.id));
+
   return (
     <section className="sheet" role="tabpanel">
-      <div className="row">
-        <h2>Comparar por tema</h2>
+      <div>
+        <h2>Compárame</h2>
+        <p className="lede" style={{ marginTop: 6 }}>Elige al menos dos partidos y un tema. Los textos son resúmenes de Papeleta Abierta: mezclan programa electoral y, cuando aplica, votaciones posteriores.</p>
+      </div>
+      <div className="compare-controls">
+        <div>
+          <p className="ans-k">Partidos</p>
+          <div className="plist" role="group" aria-label="Partidos a comparar">
+            {PARTIES.map(x => (
+              <button key={x.id} className="pbtn" type="button" aria-pressed={sel.includes(x.id)} onClick={() => toggle(x.id)}>
+                <Dot color={x.color} />{x.name}
+              </button>
+            ))}
+          </div>
+        </div>
         <label className="small" htmlFor="topicsel" style={{ display: "flex", alignItems: "center", gap: 8 }}>
           Tema
           <select id="topicsel" value={k} onChange={e => setK(e.target.value as typeof k)}>
@@ -53,12 +75,22 @@ export function Temas() {
         </label>
       </div>
       <div className="answers">
-        {PARTIES.map(p => (
-          <div key={p.id} className={`ans ${KB[p.id][k] ? "" : "none"}`}>
+        {shown.map(p => (
+          <article key={p.id} className={`ans ${KB[p.id][k] ? "" : "none"}`}>
+            <p className="ans-k">Partido</p>
             <h3><Dot color={p.color} />{p.name}</h3>
+            <p className="ans-k">Propuesta</p>
             <p>{KB[p.id][k] || "No hay propuesta recogida sobre este tema."}</p>
-            <span className="cite">{p.src} · <a href={p.url} target="_blank" rel="noopener">programa</a></span>
-          </div>
+            <div className="src">
+              <p className="ans-k">Fuente</p>
+              <ul>
+                <li>
+                  <span className="badge badge-res">Resumen · incluye votaciones</span>
+                  <a href={p.url} target="_blank" rel="noopener">{p.src}</a>
+                </li>
+              </ul>
+            </div>
+          </article>
         ))}
       </div>
     </section>

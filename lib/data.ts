@@ -133,3 +133,80 @@ export const QUESTIONS: Question[] =[
 
 export const topicName = (k: string) => (TOPICS.find(t => t[0] === k) || [k, k])[1];
 export const partyById = (id: string) => PARTIES.find(p => p.id === id);
+
+export type Hecho = { hecho: string; src: string };
+
+// Hechos de la legislatura 2023–2026: no son programa. Se muestran aparte en el buscador.
+export const LEGISLATURA: Partial<Record<TopicKey, Hecho[]>> = {
+  trabajo: [
+    { hecho: "El Congreso rechazó en septiembre de 2025 el proyecto de jornada de 37,5 horas, con los votos de PP, Vox, Junts y UPN.", src: "Votación de enmiendas a la totalidad, 10-09-2025" },
+    { hecho: "Sigue vigente la reforma laboral de 2021 y el SMI se ha ido actualizando por decreto.", src: "RDL 32/2021; reales decretos del SMI 2023-2026" },
+  ],
+  impuestos: [
+    { hecho: "Los gravámenes temporales a banca, energéticas y grandes fortunas se han prorrogado desde 2022. PP y Vox votaron en contra y prometieron suprimirlos.", src: "Leyes y prorrogas 2022-2024; programas 2023" },
+  ],
+  vivienda: [
+    { hecho: "La Ley 12/2023 permite limitar el alquiler en zonas tensionadas si lo pide la comunidad. Varias comunidades del PP no la aplican.", src: "Ley 12/2023 y su aplicación autonómica" },
+    { hecho: "El Bono Alquiler Joven y los avales ICO se han mantenido o ampliado durante la legislatura.", src: "Plan Estatal de Vivienda; convenios ICO" },
+  ],
+  pensiones: [
+    { hecho: "La revalorización con el IPC quedó fijada por ley y se ha aplicado cada año de la legislatura.", src: "Ley 21/2021 y reales decretos anuales" },
+  ],
+  inmigracion: [
+    { hecho: "El Gobierno aprobó en 2026 una regularización extraordinaria pactada con Podemos (RD 316/2026). Vox y varias comunidades del PP la han recurrido.", src: "RD 316/2026; recursos ante el Supremo" },
+  ],
+  sociedad: [
+    { hecho: "El Constitucional avaló la ley de eutanasia, recurrida por PP y Vox. En 2025 el Gobierno propuso incluir el aborto en la Constitución.", src: "LO 3/2021; propuesta de reforma 2025" },
+    { hecho: "Sigue en vigor la Ley 4/2023 (ley trans) y la Ley 20/2022 de Memoria Democrática. PP y Vox han anunciado su reforma o derogación.", src: "Ley 4/2023; Ley 20/2022" },
+  ],
+  territorio: [
+    { hecho: "La ley de amnistía se aprobó en 2024 (LO 1/2024) como parte de la investidura. PP y Vox votaron en contra.", src: "LO 1/2024 y su votación" },
+    { hecho: "PSC y ERC acordaron en 2024 una financiación singular para Cataluña. El PP se opone a un modelo no multilateral.", src: "Acuerdo PSC-ERC 2024" },
+  ],
+  energia: [
+    { hecho: "El plan vigente prevé el cierre nuclear entre 2027 y 2035. Tras el apagón de 2025 se reabrió el debate sobre prorrogar las centrales.", src: "PNIEC; debate parlamentario 2025" },
+  ],
+  educacion: [
+    { hecho: "Sigue en vigor la LOMLOE. El Gobierno ha incrementado becas y plazas de FP y de 0 a 3 años.", src: "LOMLOE; PGE 2023-2026" },
+  ],
+  sanidad: [
+    { hecho: "Se han ampliado algunas coberturas (salud bucodental, salud mental) sin una ley estatal de listas de espera.", src: "Cartera de servicios SNS 2023-2026" },
+  ],
+  justicia: [
+    { hecho: "PP y PSOE renovaron el CGPJ en 2024 con mediación europea y el compromiso de estudiar el sistema de elección.", src: "Renovación CGPJ 2024" },
+  ],
+  exterior: [
+    { hecho: "España reconoció a Palestina en mayo de 2024 y aprobó un embargo de armas a Israel en 2025.", src: "Reconocimiento 28-05-2024; embargo 2025" },
+    { hecho: "Alcanzó el 2 % del PIB en defensa en 2025 y el Gobierno rechazó el objetivo OTAN del 5 %.", src: "Cumbre OTAN 2025" },
+  ],
+};
+
+const TOPIC_HINTS: Record<TopicKey, string[]> = {
+  trabajo: ["jornada", "salario", "smi", "empleo", "laboral", "autonomo"],
+  impuestos: ["impuesto", "irpf", "fiscal", "fortuna", "sucesion", "hacienda", "tribut"],
+  vivienda: ["vivienda", "alquiler", "okupa", "suelo", "inmobili", "hipotec"],
+  pensiones: ["pension", "jubilacion", "ipc"],
+  inmigracion: ["inmigr", "regulariz", "frontera", "extranjer", "asilo", "menas"],
+  sociedad: ["aborto", "eutanasia", "trans", "memoria", "igualdad", "genero", "lgtbi"],
+  territorio: ["amnistia", "catalu", "financiacion", "referendum", "independen", "autonom"],
+  energia: ["nuclear", "energia", "clima", "renovable", "2030", "apagón", "apagon"],
+  educacion: ["educacion", "escuela", "concertad", "lomloe", "universidad", "beca"],
+  sanidad: ["sanidad", "salud", "lista de espera", "hospital", "medico"],
+  justicia: ["cgpj", "jueces", "justicia", "fiscalia", "poder judicial"],
+  exterior: ["otan", "defensa", "israel", "palestina", "ucrania", "gasto militar", "ue"],
+};
+
+function fold(s: string) {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+export function topicFromQuery(q: string): TopicKey | null {
+  const n = fold(q);
+  let best: TopicKey | null = null;
+  let score = 0;
+  for (const [k, words] of Object.entries(TOPIC_HINTS) as [TopicKey, string[]][]) {
+    const s = words.filter(w => n.includes(w)).length;
+    if (s > score) { score = s; best = k; }
+  }
+  return score ? best : null;
+}

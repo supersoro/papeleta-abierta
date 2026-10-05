@@ -8,6 +8,50 @@ const OPTS: [number, string][] = [[-2, "Muy en desacuerdo"], [-1, "En desacuerdo
 const KEY = "papeleta-test";
 const fmt = (v: Ans) => (v === undefined || v === null ? "—" : v > 0 ? `+${v}` : String(v));
 
+function joinEs(xs: string[]) {
+  if (xs.length === 1) return xs[0];
+  return xs.slice(0, -1).join(", ") + " y " + xs[xs.length - 1];
+}
+
+export function explainAffinity(ans: Ans[]) {
+  const topics = [...new Set(Q.map(q => q.t))];
+  const coincide: string[][] = PARTIES.map(() => []);
+  const discrepa: string[][] = PARTIES.map(() => []);
+  for (const topic of topics) {
+    PARTIES.forEach((_, k) => {
+      let agree = 0, disagree = 0, n = 0;
+      Q.forEach((q, j) => {
+        if (q.t !== topic) return;
+        const a = ans[j];
+        if (a === undefined || a === null) return;
+        n++;
+        const d = Math.abs(a - q.p[k]);
+        if (d === 0) agree++;
+        if (d >= 3) disagree++;
+      });
+      if (!n) return;
+      if (agree >= 1 && agree >= disagree) coincide[k].push(topic);
+      else if (disagree >= 1 && disagree > agree) discrepa[k].push(topic);
+    });
+  }
+  const take = (xs: string[]) => xs.slice(0, 2);
+  const rank = (rows: string[][], prep: string) =>
+    PARTIES.map((p, k) => ({ p, topics: take(rows[k]) }))
+      .filter(x => x.topics.length)
+      .sort((a, b) => b.topics.length - a.topics.length)
+      .slice(0, 3)
+      .map(x => `${prep} ${x.p.name} en ${joinEs(x.topics)}`);
+  const withBits = rank(coincide, "con");
+  const againstBits = rank(discrepa, "de");
+  const parts = [
+    withBits.length ? `Coincides ${withBits.join("; ")}` : "",
+    againstBits.length ? `discrepas especialmente ${againstBits.join("; ")}` : "",
+  ].filter(Boolean);
+  if (!parts.length) return "";
+  const text = parts.join(". ");
+  return text.charAt(0).toUpperCase() + text.slice(1) + ".";
+}
+
 export function affinity(ans: Ans[], imp: boolean[]) {
   return PARTIES.map((p, k) => {
     let num = 0, den = 0;
@@ -59,6 +103,7 @@ export function Test() {
 
   if (done) {
     const r = affinity(ans, imp);
+    const why = explainAffinity(ans);
     const nImp = imp.filter(Boolean).length;
     return (
       <section role="tabpanel" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -68,7 +113,8 @@ export function Test() {
             <button className="btn" type="button" onClick={() => { setAns(Q.map(() => undefined)); setImp(Q.map(() => false)); setI(0); setDone(false); }}>Repetir test</button>
           </div>
           {answered === 0 ? <p className="small">No has respondido ninguna pregunta. Repite el test para ver tu resultado.</p> : <>
-            <p className="small">Calculado sobre {answered} de {Q.length} respuestas{nImp ? `, con ${nImp} temas marcados como importantes` : ""}.{answered < 10 ? " Con pocas respuestas el resultado es poco fiable." : ""}</p>
+            {why && <p className="why">{why}</p>}
+            <p className="small">Afinidad global sobre {answered} de {Q.length} respuestas{nImp ? `, con ${nImp} temas marcados como importantes` : ""}.{answered < 10 ? " Con pocas respuestas el resultado es poco fiable." : ""} No dice a quién votar: solo mide distancia entre tus respuestas y la posición de cada partido.</p>
             <div className="results">
               {r.map(p => (
                 <div className="bar" key={p.id}>
