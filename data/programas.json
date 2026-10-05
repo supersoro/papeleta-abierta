@@ -33,5 +33,54 @@
     "url": "https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf",
     "pdf": "https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf",
     "file": "data/pdfs/podemos-2024.pdf"
+  },
+  {
+    "party": "ERC",
+    "title": "Programa electoral ERC · Generales 2023",
+    "url": "https://static.esquerra.cat/uploads/20230905/e2023-programa.pdf",
+    "pdf": "https://static.esquerra.cat/uploads/20230905/e2023-programa.pdf",
+    "file": "data/pdfs/erc-2023.pdf"
+  },
+  {
+    "party": "JUNTS",
+    "title": "Programa electoral Junts · Generales 2023",
+    "url": "https://img.beteve.cat/wp-content/uploads/2023/07/programa-junts-per-catalunya-eleccions-generals-2023.pdf",
+    "pdf": "https://img.beteve.cat/wp-content/uploads/2023/07/programa-junts-per-catalunya-eleccions-generals-2023.pdf",
+    "file": "data/pdfs/junts-2023.pdf"
+  },
+  {
+    "party": "BILDU",
+    "title": "Programa electoral EH Bildu · Generales 2023",
+    "url": "https://www.elnacional.cat/es/elecciones/generales-2023/programa-electoral-bildu-2023-mertxe-aizpurua-elecciones-generales_1059369_102.html",
+    "pdf": "https://www.newtral.es/wp-content/uploads/2023/07/Programa-electoral-EHBildu-23j-2023.pdf",
+    "file": "data/pdfs/ehb-2023.pdf"
+  },
+  {
+    "party": "PNV",
+    "title": "Programa electoral PNV · Generales 2023",
+    "url": "https://www.eaj-pnv.eus/",
+    "pdf": null,
+    "file": "data/pdfs/pnv-2023.pdf"
+  },
+  {
+    "party": "BNG",
+    "title": "Programa electoral BNG · Generales 2023",
+    "url": "https://www.bng.gal/",
+    "pdf": "https://www.bng.gal/media/bnggaliza/files/2023/07/05/23_bng_xerais_programa.pdf",
+    "file": "data/pdfs/bng-2023.pdf"
+  },
+  {
+    "party": "CC",
+    "title": "Programa autonómico Coalición Canaria 2023-2027",
+    "url": "https://coalicioncanaria.org/",
+    "pdf": null,
+    "file": "data/pdfs/cc-2023.pdf"
+  },
+  {
+    "party": "UPN",
+    "title": "Programa foral UPN 2023-2027",
+    "url": "https://www.upn.org/",
+    "pdf": null,
+    "file": "data/pdfs/upn-2023.pdf"
   }
 ]

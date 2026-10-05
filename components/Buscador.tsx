@@ -1,11 +1,12 @@
 "use client";
 import { useRef, useState } from "react";
-import { LEGISLATURA, PARTIES, topicName, type TopicKey } from "@/lib/data";
+import { LEGISLATURA, topicName, type TopicKey } from "@/lib/data";
+import { useProvincia, useVisibleParties } from "./Provincia";
 import { Dot } from "./Dot";
 
 type Cita = { fuente: string; pagina: number | null; url: string; tipo?: "programa" | "resumen" };
 type Resp = { id: string; menciona: boolean; titular?: string; respuesta: string; citas: Cita[] };
-type Result = { fuera_de_tema: boolean; sintesis?: string; partidos: Resp[]; modo: string; tema?: TopicKey | null };
+type Result = { fuera_de_tema: boolean; sintesis?: string; nota_voto?: boolean; partidos: Resp[]; modo: string; tema?: TopicKey | null };
 
 const FEATURED = "¿Qué harán con el precio del alquiler?";
 const EXAMPLES = [
@@ -16,6 +17,12 @@ const EXAMPLES = [
   "¿Qué dicen sobre inmigración?",
 ];
 
+function goSection(e: React.MouseEvent<HTMLAnchorElement>, id: "test" | "temas") {
+  e.preventDefault();
+  history.replaceState(null, "", `#${id}`);
+  window.dispatchEvent(new CustomEvent("papeleta:tab", { detail: id }));
+}
+
 function srcLine(c: Cita) {
   const kind = c.tipo === "resumen" || c.pagina == null ? "Resumen" : "Programa";
   const page = c.pagina ? ` · p. ${c.pagina}` : "";
@@ -23,6 +30,8 @@ function srcLine(c: Cita) {
 }
 
 export function Buscador() {
+  const { provincia, setOpen } = useProvincia();
+  const parties = useVisibleParties();
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -38,7 +47,7 @@ export function Buscador() {
       const r = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ q: text }),
+        body: JSON.stringify({ q: text, provincia }),
         signal: ctl.current.signal,
       });
       const data = await r.json().catch(() => ({}));
@@ -58,6 +67,7 @@ export function Buscador() {
       <div>
         <h1 className="ask-title">¿Qué quieres saber antes de votar?</h1>
         <p className="lede">Pregunta sobre vivienda, impuestos, inmigración, energía, pensiones… Cada respuesta incluye sus fuentes.</p>
+        {!provincia && <p className="small">Responde por los cinco partidos estatales. <button className="btn link" type="button" onClick={() => setOpen(true)}>Elige provincia</button> para incluir a ERC, Junts, PNV, EH Bildu, BNG, CC o UPN si se presentan.</p>}
       </div>
       <form className="ask" onSubmit={e => { e.preventDefault(); run(q); }}>
         <input id="q" type="text" autoComplete="off" maxLength={300} value={q} onChange={e => setQ(e.target.value)}
@@ -77,8 +87,11 @@ export function Buscador() {
 
       {res && !res.fuera_de_tema && (
         <div className="answers" aria-live="polite">
+          {res.nota_voto && (
+            <p className="status">Esta web no recomienda a quién votar. Abajo están las propuestas sobre el tema. Si quieres una orientación personal, usa el <a href="#test" onClick={e => goSection(e, "test")}>test de afinidad</a> o <a href="#temas" onClick={e => goSection(e, "temas")}>compara por tema</a>.</p>
+          )}
           {res.sintesis && <p className="sintesis">{res.sintesis}</p>}
-          {PARTIES.map(p => {
+          {!(res.nota_voto && !res.partidos.some(p => p.menciona)) && parties.map(p => {
             const a = res.partidos.find(x => x.id === p.id);
             const line = a?.titular || a?.respuesta;
             return (

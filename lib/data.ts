@@ -1,7 +1,12 @@
 // Base común de Papeleta Abierta: la usan el glosario, el comparador, el test y el buscador.
 // Para corregir una propuesta o una posición, edita este archivo.
 
-export type PartyId = "PP" | "PSOE" | "VOX" | "SUMAR" | "POD";
+import { REGIONAL_KB, REGIONAL_PARTIES, partyIdsFor } from "./partidos-regionales";
+import { QUESTIONS as QUESTIONS_2026 } from "./test-2026";
+export { QUESTIONS_2026 as QUESTIONS };
+export { partyIdsFor, COMUNIDADES, PROVINCIAS, STATE_IDS, extraIds } from "./partidos-regionales";
+
+export type PartyId = "PP" | "PSOE" | "VOX" | "SUMAR" | "POD" | "ERC" | "JUNTS" | "BILDU" | "PNV" | "BNG" | "CC" | "UPN";
 export type Party = { id: PartyId; name: string; full: string; color: string; lead: string; seats: string; family: string; desc: string; src: string; url: string; programaYear: number };
 
 export const ELECTION = {
@@ -13,7 +18,7 @@ export const ELECTION = {
   boe: "6 de octubre",
 };
 export type TopicKey = "trabajo" | "impuestos" | "vivienda" | "pensiones" | "inmigracion" | "sociedad" | "territorio" | "energia" | "educacion" | "sanidad" | "justicia" | "exterior";
-export type Question = { t: string; s: string; c: string; p: [number, number, number, number, number]; src: string };
+export type { Question } from "./test-2026";
 
 export const PARTIES: Party[] =[
  {id:"PP",name:"PP",full:"Partido Popular",color:"var(--pp)",lead:"Alberto Núñez Feijóo",seats:"137 escaños (2023)",family:"Centroderecha. Partido Popular Europeo.",
@@ -30,13 +35,20 @@ export const PARTIES: Party[] =[
   src:"Programa 23J 2023",url:"https://movimientosumar.es/programa-electoral-23j/",programaYear:2023},
  {id:"POD",name:"Podemos",full:"Podemos",color:"var(--podemos)",lead:"Irene Montero",seats:"4 diputados en el Grupo Mixto (salió de Sumar en 2023)",family:"Izquierda. La Izquierda Europea.",
   desc:"Partido de izquierda. Concurrió dentro de Sumar en 2023; en estas elecciones se presenta por separado, a falta de coaliciones.",
-  src:"Programa europeas 2024 y posiciones públicas",url:"https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf",programaYear:2024}
+  src:"Programa europeas 2024 y posiciones públicas",url:"https://podemos.info/wp-content/uploads/2024/05/Programa-PODEMOS-elecciones-europeas-2024.pdf",programaYear:2024},
+ ...REGIONAL_PARTIES
 ];
 
 export function programaNota(p: Party) {
-  return p.id === "POD"
-    ? "Programa europeas 2024 · pendiente el de estas elecciones"
-    : "Programa 23J 2023 · pendiente el de estas elecciones";
+  if (p.id === "POD") return "Programa europeas 2024 · pendiente el de estas elecciones";
+  if (p.id === "UPN") return "Programa foral 2023-2027 · no hubo de generales 2023";
+  if (p.id === "CC") return "Programa autonómico 2023-2027 · no hay de generales 2023";
+  return "Programa 23J 2023 · pendiente el de estas elecciones";
+}
+
+export function partiesFor(provincia?: string | null): Party[] {
+  const ids = new Set(partyIdsFor(provincia));
+  return PARTIES.filter(p => ids.has(p.id));
 }
 
 export const TOPICS: [TopicKey, string][] =[
@@ -115,38 +127,9 @@ export const KB: Record<PartyId, Record<TopicKey, string>> ={
   sanidad:"Sanidad cien por cien pública y fin de las externalizaciones.",
   justicia:"Contraria a que los jueces elijan al CGPJ. Denuncia la persecución judicial a la izquierda.",
   exterior:"Contra el aumento del gasto militar y crítica con la OTAN. Romper relaciones con Israel."
- }
+ },
+ ...REGIONAL_KB
 };
-
-// p: [PP, PSOE, VOX, SUMAR, POD] en escala -2..+2  ·  src: referencia de la codificación
-export const QUESTIONS: Question[] =[
- {t:"Trabajo",s:"La jornada laboral máxima debe bajar por ley a 37,5 horas semanales sin reducir el salario.",c:"El Congreso rechazó el proyecto en septiembre de 2025 con los votos de PP, Vox, Junts y UPN.",p:[-1,2,-2,2,2],src:"Votación enmiendas a la totalidad, 10-09-2025; programas 2023"},
- {t:"Impuestos",s:"Hay que bajar el IRPF a las rentas medias y bajas aunque se recaude menos.",c:"Afecta a los tramos del impuesto sobre la renta que paga la mayoría de asalariados.",p:[2,0,2,-1,-1],src:"Programas 23J 2023"},
- {t:"Impuestos",s:"Deben mantenerse los impuestos especiales a las grandes fortunas y a los beneficios de bancos y energéticas.",c:"Gravámenes aprobados desde 2022; el PP y Vox prometieron suprimirlos.",p:[-2,2,-2,2,2],src:"Programas 23J 2023; votaciones Congreso 2022-2024"},
- {t:"Impuestos",s:"El impuesto de sucesiones y donaciones debería bajar o eliminarse en toda España.",c:"Hoy lo regulan las comunidades autónomas y varía mucho entre ellas.",p:[2,-1,2,-2,-2],src:"Programas 23J 2023"},
- {t:"Vivienda",s:"El Estado debe poder limitar el precio del alquiler en las zonas con precios tensionados.",c:"La Ley de Vivienda de 2023 lo permite si la comunidad autónoma lo solicita.",p:[-2,1,-2,2,2],src:"Ley 12/2023 y su tramitación; programas 2023"},
- {t:"Vivienda",s:"Las viviendas ocupadas ilegalmente deben poder desalojarse en un plazo de 24 a 48 horas.",c:"Propuestas de desalojo exprés debatidas en el Congreso varias veces desde 2023.",p:[2,0,2,-1,-2],src:"Programas 2023; proposiciones de ley PP y Vox"},
- {t:"Vivienda",s:"El Estado debe construir un gran parque público de alquiler, aunque tarde varias legislaturas.",c:"El adelanto del 29 de noviembre de 2026 se produce tras tumbar el Congreso dos decretos de vivienda (PP, Vox y Junts).",p:[0,2,-1,2,2],src:"Programas 2023; votación de decretos de vivienda, 2-10-2026"},
- {t:"Vivienda",s:"Hay que limitar los pisos turísticos en las ciudades con el alquiler tensionado.",c:"Una de las medidas más debatidas en 2025 y 2026, junto a la oferta de vivienda nueva.",p:[0,1,-1,2,2],src:"Programas 2023; debate público 2025-2026"},
- {t:"Inmigración",s:"La regularización extraordinaria de inmigrantes aprobada en 2026 fue una medida acertada.",c:"Real Decreto de enero de 2026, pactado por el Gobierno con Podemos; Vox y gobiernos autonómicos del PP la han recurrido.",p:[-1,2,-2,2,2],src:"RD 316/2026; recursos de Vox y CC. AA. del PP"},
- {t:"Inmigración",s:"Hay que priorizar la expulsión de los inmigrantes en situación irregular.",c:"Incluye repatriaciones y endurecer el arraigo.",p:[1,-1,2,-2,-2],src:"Programas 2023; iniciativas de Vox 2026"},
- {t:"Sociedad",s:"Debe mantenerse la ley de eutanasia tal como está.",c:"Aprobada en 2021; PP y Vox la recurrieron al Tribunal Constitucional, que la avaló.",p:[-1,2,-2,2,2],src:"LO 3/2021; recursos ante el TC"},
- {t:"Sociedad",s:"El aborto debe estar garantizado en la sanidad pública e incluso protegido en la Constitución.",c:"El Gobierno propuso en 2025 incluir el derecho al aborto en la Constitución.",p:[0,2,-2,2,2],src:"Propuesta de reforma constitucional 2025; programas 2023"},
- {t:"Sociedad",s:"Debe mantenerse la ley que permite cambiar el sexo registral por autodeterminación.",c:"Ley 4/2023, conocida como ley trans.",p:[-2,1,-2,2,2],src:"Ley 4/2023; programas 2023"},
- {t:"Memoria",s:"La Ley de Memoria Democrática debería derogarse.",c:"Aprobada en 2022; PP y Vox anunciaron su derogación.",p:[1,-2,2,-2,-2],src:"Ley 20/2022; programas 2023"},
- {t:"Territorio",s:"La ley de amnistía para los encausados del procés fue una medida acertada.",c:"Aprobada en 2024 como parte de los acuerdos de investidura.",p:[-2,2,-2,2,2],src:"LO 1/2024 y su votación"},
- {t:"Territorio",s:"Debería permitirse un referéndum pactado sobre la independencia de Cataluña.",c:"La Constitución no lo contempla hoy.",p:[-2,-2,-2,0,2],src:"Programas 2023; declaraciones públicas"},
- {t:"Territorio",s:"Cataluña debería tener un sistema de financiación propio que le permita recaudar sus impuestos.",c:"La llamada financiación singular acordada entre PSC y ERC en 2024.",p:[-2,1,-2,1,1],src:"Acuerdo PSC-ERC 2024; declaraciones públicas"},
- {t:"Territorio",s:"El Estado debería recuperar competencias autonómicas como educación o sanidad.",c:"Hoy las gestionan las comunidades autónomas.",p:[-1,-2,2,-2,-2],src:"Programas 23J 2023"},
- {t:"Energía",s:"Las centrales nucleares deberían seguir funcionando más allá del calendario de cierre previsto.",c:"El plan vigente prevé cerrar las centrales entre 2027 y 2035.",p:[2,-1,2,-2,-2],src:"PNIEC; programas 2023; debate tras el apagón de 2025"},
- {t:"Clima",s:"Hay que acelerar la transición ecológica aunque suponga costes a corto plazo.",c:"Incluye renovables, movilidad eléctrica y limitar combustibles fósiles.",p:[0,2,-2,2,2],src:"Programas 23J 2023"},
- {t:"Educación",s:"El dinero público debe priorizar la escuela pública aunque se reduzcan los conciertos.",c:"Los colegios concertados son privados financiados con fondos públicos.",p:[-2,1,-2,2,2],src:"Programas 2023; LOMLOE"},
- {t:"Sanidad",s:"La sanidad pública debería apoyarse más en la privada para reducir las listas de espera.",c:"Conciertos con clínicas privadas para operaciones y pruebas.",p:[1,-1,1,-2,-2],src:"Programas 23J 2023"},
- {t:"Justicia",s:"Los jueces deberían elegir a la mayoría de los miembros del Consejo General del Poder Judicial.",c:"Hoy los elige el Parlamento; lo reclama también la Comisión Europea.",p:[2,-1,2,-2,-2],src:"Programas 2023; renovación CGPJ 2024"},
- {t:"Instituciones",s:"Debería celebrarse un referéndum para elegir entre monarquía y república.",c:"",p:[-2,-1,-2,1,2],src:"Programas 2023; declaraciones públicas"},
- {t:"Defensa",s:"España debe aumentar el gasto en defensa hasta al menos el 2 % del PIB.",c:"Compromiso con la OTAN; España alcanzó esa cifra en 2025 y rechazó el objetivo del 5 %.",p:[2,1,1,-1,-2],src:"Cumbre OTAN 2025; declaraciones públicas"},
- {t:"Exterior",s:"España debe aplicar un embargo comercial y de armas a Israel por la guerra en Gaza.",c:"El Gobierno reconoció a Palestina en 2024 y aprobó un embargo de armas en 2025.",p:[-1,1,-2,2,2],src:"Reconocimiento 28-05-2024; embargo de armas 2025"}
-];
 
 export const topicName = (k: string) => (TOPICS.find(t => t[0] === k) || [k, k])[1];
 export const partyById = (id: string) => PARTIES.find(p => p.id === id);

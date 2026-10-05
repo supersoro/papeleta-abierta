@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Buscador } from "@/components/Buscador";
 import { Test } from "@/components/Test";
 import { Partidos, Temas } from "@/components/Partidos";
+import { ProvinciaDialog, ProvinciaLabel, ProvinciaProvider } from "@/components/Provincia";
 import { ELECTION } from "@/lib/data";
 
 const TABS = [
@@ -34,15 +35,29 @@ export default function Home() {
   const [tab, setTab] = useState<Tab>("buscar");
 
   useEffect(() => {
-    const h = location.hash.slice(1);
-    if (TABS.some(t => t[0] === h)) setTab(h as Tab);
+    const apply = (id: string) => {
+      if (TABS.some(t => t[0] === id)) setTab(id as Tab);
+    };
+    const onHash = () => apply(location.hash.slice(1));
+    const onGo = (e: Event) => apply((e as CustomEvent<string>).detail);
+    onHash();
+    window.addEventListener("hashchange", onHash);
+    window.addEventListener("popstate", onHash);
+    window.addEventListener("papeleta:tab", onGo);
+    return () => {
+      window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("popstate", onHash);
+      window.removeEventListener("papeleta:tab", onGo);
+    };
   }, []);
   const select = (t: Tab) => { setTab(t); history.replaceState(null, "", `#${t}`); };
 
   return (
+    <ProvinciaProvider>
     <div className="wrap">
+      <ProvinciaDialog />
       <header>
-        <div className="eyebrow"><span>Elecciones generales · 29 de noviembre</span><span><Countdown /></span></div>
+        <div className="eyebrow"><span>Elecciones generales · 29 de noviembre</span><span><Countdown /></span><ProvinciaLabel /></div>
         <p className="brand">Papeleta Abierta</p>
       </header>
 
@@ -69,7 +84,8 @@ export default function Home() {
         <p>Cuando un partido publique su programa de estas elecciones, se sustituye el de 2023. Los resúmenes los redacta Papeleta Abierta; la fuente original manda.</p>
       </details>
 
-      <footer>Partidos incluidos: los cinco con presencia estatal en todas las circunscripciones. Los que solo se presentan en algunas comunidades (ERC, Junts, PNV, EH Bildu, BNG, CC) y SALF se añadirán cuando confirmen candidatura y programa. Consulta siempre el programa original.</footer>
+      <footer>Los partidos estatales aparecen en todas las circunscripciones. ERC, Junts, EH Bildu, PNV, BNG, CC y UPN, solo donde se presentan. Las candidaturas de 2026 figuran como «por confirmar» hasta las listas (21-26 de octubre; definitivas el 3 de noviembre). <a href="/metodologia">Metodología</a>. Consulta siempre el programa original.</footer>
     </div>
+    </ProvinciaProvider>
   );
 }

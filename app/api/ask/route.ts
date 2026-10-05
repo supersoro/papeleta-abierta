@@ -7,7 +7,13 @@ export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   let q = "";
-  try { q = String((await req.json())?.q ?? "").trim(); } catch {}
+  let provincia: string | null = null;
+  try {
+    const body = await req.json();
+    q = String(body?.q ?? "").trim();
+    const p = String(body?.provincia ?? "").trim();
+    if (p) provincia = p;
+  } catch {}
   if (q.length < 3) return NextResponse.json({ error: "Escribe una pregunta un poco más larga." }, { status: 400 });
   if (q.length > 300) return NextResponse.json({ error: "La pregunta es demasiado larga. Resúmela en menos de 300 caracteres." }, { status: 400 });
   if (!process.env.ANTHROPIC_API_KEY) return NextResponse.json({ error: "El buscador no está configurado (falta ANTHROPIC_API_KEY)." }, { status: 503 });
@@ -20,7 +26,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    return NextResponse.json(await ask(q));
+    return NextResponse.json(await ask(q, provincia));
   } catch (e) {
     console.error("ask failed", e);
     return NextResponse.json({ error: "No se pudo generar la respuesta. Inténtalo de nuevo en unos segundos." }, { status: 502 });

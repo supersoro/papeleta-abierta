@@ -4,7 +4,7 @@
 export type Chunk = { id: string; party: string; page: number; text: string };
 
 const STOP = new Set(
-  "a al algo algun alguna algunas alguno algunos ante antes aqui asi aun bajo bien cada como con contra cual cuales cuando de del desde donde dos el ella ellas ellos en entre era es esa esas ese eso esos esta estan estas este esto estos fue ha han hasta hay la las le les lo los mas me mi mientras muy nos o otra otras otro otros para pero poco por porque que quien se sea segun ser si sin sino sobre son su sus tambien tan tanto te tiene tienen todo todos tras tu un una uno unos y ya va van hacer haran harian propone proponen dice dicen partido partidos quiere quieren sobre opina piensa".split(" ")
+  "a al algo algun alguna algunas alguno algunos ante antes aqui asi aun bajo bien bueno buena buenos buenas cada como con contra cual cuales cuando de del desde donde dos el ella ellas ellos en entre era es esa esas ese eso esos esta estan estas este esto estos fue ha han hasta hay la las le les lo los malo mala malos malas mas me mejor mejores menos mi mientras muy nos o otra otras otro otros para pero peor peores poco por porque que quien se sea segun ser si sin sino sobre son su sus tambien tan tanto te tiene tienen todo todos tras tu un una uno unos y ya va van hacer haran harian propone proponen dice dicen partido partidos quiere quieren sobre opina piensa".split(" ")
 );
 
 export function normalize(s: string): string {
