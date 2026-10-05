@@ -28,6 +28,7 @@ export function Test() {
   const [i, setI] = useState(0);
   const [done, setDone] = useState(false);
   const [grow, setGrow] = useState(false);
+  const [ready, setReady] = useState(false);
 
   // Las respuestas solo se guardan en el navegador del usuario
   useEffect(() => {
@@ -35,13 +36,17 @@ export function Test() {
       const s = JSON.parse(localStorage.getItem(KEY) || "null");
       if (s?.ans?.length === Q.length) {
         const a: Ans[] = s.ans.map((x: number | null | "u") => (x === "u" ? undefined : x));
-        setAns(a); setImp(s.imp);
+        setAns(a); setImp(Array.isArray(s.imp) && s.imp.length === Q.length ? s.imp : Q.map(() => false));
         const first = a.findIndex((x: Ans) => x === undefined);
         setI(first === -1 ? 0 : first);
       }
     } catch {}
+    setReady(true);
   }, []);
-  useEffect(() => { try { localStorage.setItem(KEY, JSON.stringify({ ans: ans.map(x => (x === undefined ? "u" : x)), imp })); } catch {} }, [ans, imp]);
+  useEffect(() => {
+    if (!ready) return;
+    try { localStorage.setItem(KEY, JSON.stringify({ ans: ans.map(x => (x === undefined ? "u" : x)), imp })); } catch {}
+  }, [ans, imp, ready]);
   useEffect(() => { if (done) { setGrow(false); const t = setTimeout(() => setGrow(true), 30); return () => clearTimeout(t); } }, [done]);
 
   const go = (n: number) => { if (n >= Q.length) { setDone(true); return; } setI(Math.max(0, n)); };
