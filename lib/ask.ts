@@ -22,8 +22,10 @@ export type AskResult = {
   historial: { id: string; titulo: string; fecha: string | null; fuente: string; votos: Record<string, string> }[];
 };
 
-const PER_PARTY = 4;
-const MAX_TOKENS = 3000;
+const PER_PARTY = 3;
+const CHUNK_CHARS = 480;
+const MAX_TOKENS = 1000;
+const DEFAULT_MODEL = "claude-haiku-4-5";
 const pdfChunks = chunksData as Chunk[];
 const pdfIndex = buildIndex(pdfChunks);
 const partiesWithPdf = new Set(pdfChunks.map(c => c.party));
@@ -42,7 +44,11 @@ export function retrieve(query: string, partyIds?: PartyId[]) {
   return list.map(p => {
     const usePdf = partiesWithPdf.has(p.id);
     const hits = search(usePdf ? pdfIndex : summaryIndex, q, { party: p.id, k: PER_PARTY });
-    return { party: p, usePdf, hits: hits.map(h => h.chunk) };
+    return {
+      party: p,
+      usePdf,
+      hits: hits.map(h => ({ ...h.chunk, text: h.chunk.text.length > CHUNK_CHARS ? h.chunk.text.slice(0, CHUNK_CHARS) + "…" : h.chunk.text })),
+    };
   });
 }
 
@@ -72,13 +78,24 @@ function parseJson(text: string): any {
   return null;
 }
 
+function modelId() {
+  return process.env.ANTHROPIC_MODEL || DEFAULT_MODEL;
+}
+
 async function callModel(client: Anthropic, content: string, attempt: number): Promise<any> {
-  const msg = await client.messages.create({
-    model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5",
+  const model = modelId();
+  const req: Record<string, unknown> = {
+    model,
     max_tokens: MAX_TOKENS,
     system: SYSTEM,
     messages: [{ role: "user", content }],
-  });
+  };
+  if (model.includes("sonnet") || model.includes("opus")) {
+    req.output_config = { effort: "low" };
+  }
+  const msg = await client.messages.create(req as any);
+  const usage = msg.usage as { input_tokens?: number; output_tokens?: number } | undefined;
+  console.error("ask usage", { model, attempt, stop: msg.stop_reason, in: usage?.input_tokens, out: usage?.output_tokens });
   const text = msg.content.map(b => (b.type === "text" ? b.text : "")).join("");
   const data = parseJson(text);
   const truncated = msg.stop_reason === "max_tokens";

@@ -2,8 +2,8 @@
 // Con UPSTASH_REDIS_REST_URL/TOKEN los contadores se comparten entre instancias (recomendado en producción).
 // Sin ellos se usa memoria local, que en Vercel es por instancia: suficiente para la prueba.
 
-const PER_MIN = Number(process.env.RATE_LIMIT_PER_MINUTE || 5);
-const DAILY = Number(process.env.DAILY_LIMIT || 2000);
+const PER_MIN = Number(process.env.RATE_LIMIT_PER_MINUTE || 8);
+const DAILY = Number(process.env.DAILY_LIMIT || 400);
 const URL_ = process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 

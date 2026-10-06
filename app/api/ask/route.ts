@@ -15,6 +15,15 @@ export async function POST(req: NextRequest) {
     const p = String(body?.provincia ?? "").trim();
     if (p) provincia = resolveProvincia(p);
   } catch {}
+  const origin = req.headers.get("origin") || "";
+  const referer = req.headers.get("referer") || "";
+  const host = req.headers.get("host") || "";
+  const fromSite = [origin, referer].some(v =>
+    v.includes(host) || /papeletaabierta\.com|localhost|127\.0\.0\.1/.test(v)
+  );
+  if (process.env.VERCEL && !fromSite) {
+    return NextResponse.json({ error: "El buscador solo acepta preguntas desde la web." }, { status: 403 });
+  }
   if (q.length < 3) return NextResponse.json({ error: "Escribe una pregunta un poco más larga." }, { status: 400 });
   if (q.length > 300) return NextResponse.json({ error: "La pregunta es demasiado larga. Resúmela en menos de 300 caracteres." }, { status: 400 });
   if (!process.env.ANTHROPIC_API_KEY) return NextResponse.json({ error: "El buscador no está configurado (falta ANTHROPIC_API_KEY)." }, { status: 503 });
